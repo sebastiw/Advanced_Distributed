@@ -2,6 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{fancyhdr}
+\usepackage{hyperref}
 \usepackage{tikz}
 
 %% == Commands ================================================
@@ -19,7 +20,10 @@
   \noindent
   \parbox[t]{\textwidth}{#1 \parbox[t]{0.95\textwidth}{#2}}\\
 }
-\newcommand{\solution}[1]{\\\horrule{0.5pt}\\[3pt]\textit{Solution: }\\\parbox[t]{\textwidth}{#1}}
+\newcommand{\seealso}[1]{\\\textit{See also:} #1}
+\newcommand{\solution}[1]{\\\horrule{0.5pt}\\[3pt]\textit{Solution: }\\\begin{minipage}{\textwidth}#1\end{minipage}}
+\newcommand{\highlight}[1]{{\color{blue}#1}}
+
 
 %% == Settings ================================================
 \setlength{\topskip}{0pt} % Skip some whitespace at the top
@@ -72,23 +76,117 @@ Note! These solutions are not from the department giving the course, and they ha
 \question{Give an example of an execution that is sequential
   consistent but not linearizable. \\ Show that every linearizable
   history is sequential consistent.}
-\solution{}
+\seealso{\ref{2014-03:linearizability}, \ref{2013-08:linearizability}, \ref{2013-03:linearizability}}
+\solution{See: \ref{2013-03:linearizability}}
 
 \points{10}
 \question{Give a specification of a state machine replication
   abstraction and an underlying algorithm to implement it using a
   total order broadcast abstraction.}
+\oklarhet{Bad formulation of the question?}
+\solution{
+  An replica manager (RM) can be a state machine, which has the
+  following properties:\\
+  State Machine
+  \begin{itemize}
+    \item Applies operations atomically.
+    \item Its state is a deterministic function of its internal state
+      and the operations applied.
+    \item All replicas start identical and carry out the same sequence
+      of operations.
+    \item Its operations must not be affected by clock readings etc.
+  \end{itemize}
+
+  ISIS algorithm for total ordering broadcast:\\
+  Each process $p$ keeps $A^q$, the largest agreed sequence number it
+  has observed so far, and $P^q$, its own largest proposed sequence
+  number.
+  \begin{enumerate}
+    \item $p$ B-multicasts <$m$,$i$> where $i$ is a unique identifier
+      for message $m$.
+    \item On receiving <$m$,$i$> for the first time
+      Each process $q$ replies to the sender $p$ with a proposal
+      for the message's agreed sequence number of $P^q := Max(A^q,
+      P^q)+1$. Each process provisionally assigns the proposed
+      sequence number to the message and places it in its hold-back
+      queue. Which is ordered with the smallest sequence number at the front.
+    \item $p$ collects all proposed sequence numbers and selects the
+      largest one, $a$, as the next agreed sequence number. It then
+      B-multicasts <$i$,$a$>. Each process $q$ sets $A^q := Max(A^q,
+      a)$, and attaches $a$ to the message (which is identified by
+      $i$). If the agrees sequence number differs from the proposed
+      sequence number, it reorders the messages in its hold-back
+      queue. When the message at the front of the hold-back queue has
+      been assigned its agreed sequence number, it is transferred to
+      the tail of the delivery queue. Messages that have been assigned
+      their agreed sequence number but are not at the head of the
+      hold-back queue, are not yet transferred.
+  \end{enumerate}
+
+  \begin{tikzpicture}
+  \end{tikzpicture}
+}
+
 
 \points{5}
-\question{Is it possible to implement a total order broadcast
+\question{
+  Is it possible to implement a total order broadcast
   deterministically in asynchronous systems with message loses? \\
   Provide an algorithm or an impossibility proof.}
+\solution{
+  No, it is not possible. Proof equivalent to the consensus problem.\\
+  Consensus problem:\\
+  To reach consensus every process $p_i$ begins in the undecided
+  state and proposes a single value $v_i$, drawn from a set $D$ ($i =
+  1, 2, ..., N$). The processes communicate with one another,
+  exchanging values. Each process then sets the value of a decision
+  variable, $d_i$. In doing so it enters the decided state, in which
+  it may no longer change $d_i$ ($i = 1, 2, ..., N$). \\
+
+  The requirements of a consensus algorithm are that the following
+  conditions should hold for every execution of it:
+  \begin{description}
+    \item[Termination] every correct process eventually decides some
+      value.
+    \item[Validity] if all processes that propose a value proposes $v$
+      then all correct processes eventually decide $v$.
+    \item[Agreement] if a correct process decides on value $v$, then all correct
+      processes eventually decides on $v$.
+    \item[Integrity] every process decides at most once, and if it
+      decides some value $v$ then $v$ must have been proposed by some process.
+  \end{description}
+
+  %% Maybe tikz?
+  % \begin{tikzpicture}
+  % \end{tikzpicture}
+}
 
 \points{10}
 \question{What are the properties that a causal broadcast must
   satisfy? \\ Compare the causal broadcast property with the following
-property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
-\rightarrow m_2$, then the process must deliver $m_1$ before $m_2$.''}
+  property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
+  \rightarrow m_2$, then the process must deliver $m_1$ before
+  $m_2$.''}
+\oklarhet{Unsure about the comparison in the question and answer.}
+\solution{
+  Causality properties:
+  \begin{description}
+    \item[FIFO order] Some process $p_i$ broadcasts $m_1$ before
+      broadcasting $m_2$.
+    \item[Local order] Some process $p_i$ delivers $m_1$ and then
+      broadcasts $m_2$.
+    \item[Transitivity] There is a message $m'$ such that $m_1
+      \rightarrow m'$ and $m' \rightarrow m_2$.
+  \end{description}
+
+  In order for the causal broadcast property (``if a process delivers
+  messages $m_1$ and $m_2$, and $m_1 \rightarrow m_2$, then the
+  process must deliver $m_1$ before $m_2$.'') to happen, either a
+  process must have broadcasted $m_1$ and $m_2$ in order, or a process
+  have delivered $m_1$ and then broadcasts $m_2$ as a response to
+  $m_1$, or there is some message $m'$ that happened before $m_2$ but
+  not before $m_1$ such that $m_1 \rightarrow m', m' \rightarrow m_2$.
+}
 
 \points{10}
 \question{The flooding algorithm is a straight forward broadcasting
@@ -97,6 +195,17 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
   first time, it sends to all other adjacent processes further
   broadcast messages. \\ What is the Time and Message Complexity of
   the algorithm? Please provide a complexity analysis.}
+\solution{
+  In a graph $G(V,E)$ where $V$ is the processes, the number of
+  messages needed is $2|E|$, and the time complexity is the depth
+  (diameter) of the graph $D(G)$.
+
+  \begin{tikzpicture}
+  \end{tikzpicture}
+
+  \begin{tikzpicture}
+  \end{tikzpicture}
+}
 
 \points{10}
 \question{The algorithm by Choy and Singh uses two Doorways. The
@@ -104,6 +213,49 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
   pseudo-code and informally. \\ Use both Doorways to construct a
   solution to the Dinning Philosophers problem for a system of 3
   philosophers.}
+\solution{
+  Let $N_p$ denote the set of neighbors of process $p$ and $L_{pq}$
+  the actual state of $q$ known by $p$. If neighbor processes
+  $q_0,...,q_t \in N_p$ have entered the doorway, $p$ must wait until
+  $q_0,...,q_t$ will have exited the doorway.\\[0.1cm]
+
+  Asynchronous Doorway entry code:\\
+  $\forall q \in N_p:$ \textbf{wait until} $L_{pq} \neq m_1$;\\
+  \textbf{broadcast} message $m_1$ to all neighbors;\\[0.1cm]
+
+  Asynchronous Doorway exit code:\\
+  \textbf{broadcast} a message different from $m_1$ to neighbors;\\[0.1cm]
+
+  Synchronous Doorway entry code:\\
+  \textbf{wait until} ($\forall q \in N_p: L_{pq} \neq m_2$);\\
+  \textbf{broadcast} message $m_2$ to neighbors;\\[0.1cm]
+
+  Synchronous Doorway exit code:\\
+  \textbf{broadcast} a message different from $m_2$ to neighbors;\\[0.1cm]
+
+  The problem the asynchronous doorway is that $n$ processes can all
+  enter the doorway at the same time, because it takes some time to
+  actually enter the doorway.\\[0.1cm]
+
+  The problem with the synchronous doorway is that two processes can
+  cooperate to block a third process. It is not fair.\\[0.1]
+
+  To solve the Dinning philosophers problem, a double doorway is
+  needed.\\
+  The entry code consists out of the synchronous doorway entry code
+  embedded in an asynchronous doorway entry and exit code. Processes
+  that wish to enter the double doorway cannot forever be hindered from
+  entering by neighbour processes as the asynchronous doorway will allow
+  a process to proceed latest when all neighbors inside the doorway
+  have passed the asynchronous doorway exit code. Further the
+  asynchronous doorway guarantees that process $p$ which passed the
+  asynchronous doorway will be blocked from entering the synchronous
+  doorway at most once by each neighbor.
+
+  %% Master thesis p.50.
+  \begin{tikzpicture}
+  \end{tikzpicture}
+}
 
 \points{5}
 \question{Show that Byzantine agreement can be reached for three
@@ -159,19 +311,27 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
 
 \section{Tenta 2014-03-12}
 \points{10}
+\label{2014-03:linearizability}
 \question[a)]{Give the definitions of Linearizability and Sequential
   Consistency.}
 \question[b)]{A correctness property $\rho$ is compositional if, whenever
   each object in the system satisfies $\rho$, the system as a whole
-  satisfies $rho$. Is Sequential Consistency compositional? \\
+  satisfies $\rho$. Is Sequential Consistency compositional? \\
   If yes explain why, if no give an example.}
 
 \points{10}
-\question{Describe the differences between the three-phase commit
+\label{2014-03:phase-commit}
+\question{
+  Describe the differences between the three-phase commit
   protocol and the two-phase commit protocol. Draw the three-phase
   commit protocol as a state machine where you also describe the
   behavior of the protocol when time-outs are triggered and processes
   are recovered after crashing.}
+\solution{
+  \begin{tikzpicture}
+  \end{tikzpicture}
+}
+
 
 \points{5}
 \question{What are the properties that a causal broadcast must
@@ -241,6 +401,7 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
 
 \section{Tenta 2013-03-16}
 \points{10}
+\label{2013-03:linearizability}
 \question[a)]{Give the definitions of Linearizability and Sequential
   Consistency}
 \question[b)]{Give an example pseudocode for a simple program that
@@ -261,6 +422,54 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
       limited time. (Application II is from Chapter 18th of the course
       book.)
   \end{itemize}}
+\solution{a)
+  A replicated shared object service is said to be
+  \highlight{linearizable} if \textit{for any execution} there is
+  some interleaving of the series of operations issued by all the
+  clients that satisfies the following two criteria:
+  \begin{itemize}
+    \item The interleaved sequence of operations meets the
+      specification of a (single) correct copy of the objects.
+    \item The order of operations in the interleaving is consistent
+      with the \highlight{real times at which the operations
+        occurred in the actual execution.}
+  \end{itemize}
+
+  A replicated shared object service is said to be
+  \highlight{sequentially consistent} \textit{if for any
+    execution} there is some interleaving of the series of operations
+  issued by all the clients that satisfies the following two criteria:
+  \begin{itemize}
+    \item The interleaved sequence of operations meets the
+      specification of a (single) correct copy of the objects.
+    \item The order of operations in the interleaving is consistent
+      with the \highlight{program order in which each individual
+        client executed them.}
+  \end{itemize}
+
+  \begin{center}
+    Example execution for a service which is sequentially consistent
+    but not linearizable.\\
+    \begin{tabular}{| l | l |}\hline
+      Client 1: & Client 2: \\\hline
+      $setBalance_B(x, 1)$ &\\
+      & $getBalance_A(y) \rightarrow 0$\\
+      & $getBalance_A(x) \rightarrow 0$\\
+      $setBalance_A(y, 2)$ &\\\hline
+    \end{tabular}
+    The real-time criterion for linearizability is not satisfied,
+    since $getBalance_A(x) \rightarrow 0$ occurs later than
+    $setBalance_B(x,1)$.\\
+  \end{center}
+
+  Sequential consistency requires that all of the data
+  \textit{appears} to have been executed atomically, in some sequential
+  order that is consistent with the order seen at the individual
+  processes. When this order must also preserve the global (external)
+  ordering of non-overlapping operations, this consistency guarantee is
+  called linearizability.
+}
+
 
 \points{10}
 \question[a)]{What are FIFO ordering, causal ordering and total
@@ -343,6 +552,7 @@ before $m_2$.''}
   should take care and clean unnecessary memory periodically.}
 
 \points{10}
+\label{2013-08:linearizability}
 \question{Explain the difference between linearizability
   and sequential consistency.}
 
