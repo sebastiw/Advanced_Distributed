@@ -3,7 +3,6 @@
 \usepackage[T1]{fontenc}
 \usepackage{fancyhdr}
 \usepackage{tikz}
-\usepackage{pbox}
 
 %% == Commands ================================================
 \newcommand{\coursecode}{TDA297}
@@ -16,10 +15,10 @@
   \noindent\fbox{\parbox[b][4em][t]{\textwidth}{\color{red}#1} }%
 }
 \newcommand{\points}[1]{\subsection{} \textit{#1 points}\\}
-\newcommand{\question}[1]{
-  \noindent\pbox{\textwidth}{#1}
+\newcommand{\question}[2][]{
+  \noindent
+  \parbox[t]{\textwidth}{#1 \parbox[t]{0.95\textwidth}{#2}}\\
 }
-
 
 %% == Settings ================================================
 \setlength{\topskip}{0pt} % Skip some whitespace at the top
@@ -115,9 +114,9 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
   to the consensus problem.}
 
 \points{5}
-\question{Can Byzantine agreement be reached for 8 generals, with 3 of
+\question[a)]{Can Byzantine agreement be reached for 8 generals, with 3 of
   them faulty?}
-\question{Can Byzantine agreement be reached for 8 generals, with 3 of
+\question[b)]{Can Byzantine agreement be reached for 8 generals, with 3 of
   them faulty, if the generals digitally sign their messages?}
 
 \points{8}
@@ -158,9 +157,9 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
 
 \section{Tenta 2014-03-12}
 \points{10}
-\question{Give the definitions of Linearizability and Sequential
+\question[a)]{Give the definitions of Linearizability and Sequential
   Consistency.}
-\question{A correctness property $\rho$ is compositional if, whenever
+\question[b)]{A correctness property $\rho$ is compositional if, whenever
   each object in the system satisfies $\rho$, the system as a whole
   satisfies $rho$. Is Sequential Consistency compositional? \\
   If yes explain why, if no give an example.}
@@ -179,17 +178,17 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
 \rightarrow m_2$, then the process must deliver $m_1$ before $m_2$.''}
 
 \points{10}
-\question{Describe an algorithm for leader election on a ring
+\question[a)]{Describe an algorithm for leader election on a ring
   topology. All processes have unique ids and the system is
   asynchronous. Any process can initiate the leader election protocol
   at any time.}
-\question{Compute the time complexity and communication complexity of
+\question[b)]{Compute the time complexity and communication complexity of
   your algorithm.}
-\question{Is it possible to design a symmetric algorithm for leader
+\question[c)]{Is it possible to design a symmetric algorithm for leader
   election? If yes, provide such an algorithm, if no provide a proof.}
 
 \points{15}
-\question{Eric wants to build a replicated storage system. In his
+\question[a)]{Eric wants to build a replicated storage system. In his
   system there is only one client. The client performs just one
   storage operation (read or write) at a time, waiting for each
   operation to complete before starting the next. Eric wants
@@ -208,7 +207,7 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
   Please explain why. Eric wants to formalize the consistency
   properties of the replication system. Is it sequential consistent?
   Is it a linearizable one? Please explain your answer.}
-\question{Eric decides to change his design and uses now the gossip
+\question[b)]{Eric decides to change his design and uses now the gossip
   architecture that lazily synchronizes the two servers. The single
   client contacts any server that is available and gets the value that
   this server has, updates are also performed on the first available
@@ -218,7 +217,7 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
   formalize the consistency properties of the replication system in
   case where there are no failures. Is it sequential consistent? Is it
   a linearizable one? Please explain your answer.}
-\question{Eric decides to change his design and uses now nine replicas
+\question[c)]{Eric decides to change his design and uses now nine replicas
   and quorums to ensure strong consistency and availability. What are
   the constraints on the sizes of read and write quorums? What is the
   availability that he can achieve? Give an example of quorum
