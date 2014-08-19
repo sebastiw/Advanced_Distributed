@@ -332,4 +332,24 @@ before $m_2$.''}
   protocol for a system with $n \geq 3$ processes, from which $f$ are
   faulty if $n \leq 3f$.}
 
+
+\section{2013-08-23}
+\points{10}
+\question{Describe an implementation of a distributed Linked-List that tolerates 2 replica crashes for all operations (\textit{insert, delete} and \textit{find}). Your implementation should take care and clean unnecessary memory periodically.}
+
+\points{10}
+\question{Explain the difference between linearizability and sequential consistency.}
+
+\points{15}
+\question{Describe an algorithm that computes a spanning tree of a network $G(V,E)$. Explain how a node of the network can use the existence of such a spanning tree in order to broadcast information to all nodes of the network.}
+
+\points{15}
+\question{Describe the two generals problem. Can you find a solution to the problem? If yes describe your solution and provide a proof of its time and communication complexity. If not provide a proof that the problem is not solvable. }
+%Nämn både synchronous och asynchronous system!
+
+\points{10}
+\question{Gifford's quorum consensus replication is in use at servers $X, Y$, and $Z$ which all hold replica's of data items $A$ and $B$. The initial values of all replicas of $A$ and $B$ are 100 and the votes for $A$ an $B$ are 1 at each $X, Y$ and $Z$. Also $R=W=2$ for both $A$ and $B$. A client reads the value of $A$ then writes it to $B$.}\\
+\question[a]{At the time the client performs these operations, a particion separates server $X$ and $Y$ from server $Z$. Describe the quota obtained and the operations that take place if the client can access server $X$ and $Y$.}
+\question[b]{Describe the quora obtained and the operations that take place if the client can access only server $Z$.}
+\question[c]{The partition is repaired and then another partition occurs so that $X$ and $Z$ are separated from $Y$. Describe the quora obtained and the operations that take place if the client can access server $X$ and $Z$.}
 \end{document}
