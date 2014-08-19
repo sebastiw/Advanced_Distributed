@@ -237,4 +237,99 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
   counterexample. \\
   What is the time complexity of this algorithm?}
 
+\section{Tenta 2013-03-16}
+\points{10}
+\question[a)]{Give the definitions of Linearizability and Sequential
+  Consistency}
+\question[b)]{Give an example pseudocode for a simple program that
+  would operate correctly with sequential consistency but incorrectly
+  with linearizability. (Briefly explain your answer.)}
+\question[c)]{Describe the advantages and disadvantages of using each
+  for an application, paying particular attention to any assumptions
+  you must make about the users behaviour. As two example applications
+  you can consider:
+  \begin{itemize}
+    \item a web site allowing registered users to upload videos and
+      allowing anybody to download and watch them. (Comments on videos
+      are note supported.)
+    \item a multi-user game, the players move figures around a common
+      scene. The state of the game is replicated at the players'
+      workstation and a server. The figures may throw projectiles at
+      another, and a hit debilitates the unfortunate recipient for a
+      limited time. (Application II is from Chapter 18th of the course
+      book.)
+  \end{itemize}}
+
+\points{10}
+\question[a)]{What are FIFO ordering, causal ordering and total
+  ordering guarantees of replica managers? How are they related to
+  each other?}
+\question[b)]{Compare the causal ordering property with the following
+property: ``if a replica manager processes messages $m_1$ and $m_2$,
+and $m_1 \rightarrow m_2$, then the replica manager must process $m_1$
+before $m_2$.''}
+
+\points{10}
+\question[a)]{Eric wants to build a replicated storage system. In his
+  system there is only one client. The client performs just one
+  storage operation (read or write) at a time, waiting for each
+  operation to complete before starting the next. Eric wants
+  availability even in the case of one server failure. Because of that
+  he decides to store the data on two servers. Eric wants to ensure
+  that the data on the two servers stay identical all the time. In
+  order to guarantee that he is thinking making the two servers atomic
+  using two-phase commit, to ensure both-or-nothing behavior. In the
+  design he has in mind, the client acts as the transaction
+  coordinator. The client would execute a write as described in the
+  two-phase commit protocol. The system uses timeout recovery scheme
+  explaineed in the lectures. Eric thinks about this design for a
+  while, and eventually realizes that two-phase commit is
+  fundamentally not suited to providing availability via
+  replication. \\
+  Please explain why.}
+\question[b)]{Eric decides to change his design and use nine replicas
+  and quorums to ensure strong consistency and availability. What are
+  the constraints on the sizes of read and write quorums? What is the
+  availability that he can achieve? Give an example of quorum
+  processing involving a write, two reads, then a write.}
+
+
+\points{10}
+\question{A distributed conference application provides a shared
+  whiteboard. Each member of the conference has a replica of the
+  whiteboard that is managed by a specific member of a closed process
+  group. \\
+  Describe an approach that uses the algorithm by Choy and Singh to
+  achieve mutually exclusive access to the whiteboard, prior to
+  propagation of the updates to the whole group. \\
+  If the number of members of the group is $n$, what is the time
+  complexity of the scheme, provide a brief proof?}
+
+\points{5}
+\question{Describe an algorithm that solves consensus in a synchronous
+  system where up to $f$ of the $n$ processes exhibit crash failures,
+  assume the existence of a reliable multicast protocol. \\
+  What is the time complexity of the algorithm.}
+
+\points{10}
+\question{The flooding algorithm is a straight forward reliable
+  broadcast algorithm. The initiator sends to all its neigbors a
+  message of kind broadcast. When a process receives message broadcast
+  for the first time, it sends to all other adjacent processes
+  further broadcast messages.}
+\question[a)]{What are the properties of reliable broadcast.}
+\question[b)]{What is the Time and Message Complexity of the algorithm
+  in fault-free asynchronous execution?}
+\question[c)]{What is the Time and Message Complexity of the algorithm
+  in an asynchronous execution in the presence of crash faults? (No
+  partitions.) \\
+  Please provide brief complexity analysis.}
+
+\points{5}
+\question{Consider it as given that there is no Byzantine agreement
+  protocol for a system with 3 processes, from which 1 of them
+  faulty. Using this proof prove that there is no Byzantine agreement
+  protocol for a system with $n \geq 3$ processes, from which $f$ are
+  faulty if $n \leq 3f$.}
+
 \end{document}
