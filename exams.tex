@@ -4,6 +4,7 @@
 \usepackage{fancyhdr}
 \usepackage{hyperref}
 \usepackage{tikz}
+\usetikzlibrary{decorations.pathmorphing,shapes,arrows,positioning,calc,fit,petri}
 
 %% == Commands ================================================
 \newcommand{\coursecode}{TDA297}
@@ -36,12 +37,13 @@
 }
 
 \tikzset{
-  block/.style = {draw, fill=white, rectangle, minimum height=3em, minimum width=3em},
-  tmp/.style = {coordinate},
-  sum/.style= {draw, fill=white, circle, node distance=1cm},
-  input/.style = {coordinate},
-  output/.style= {coordinate},
-  pinstyle/.style = {pin edge={to-,thin,black}}
+  bend angle     = 15,
+  pre/.style     = {<-,shorten <=1pt, semithick},
+  post/.style    = {->,shorten >=1pt, semithick},
+  process/.style = {draw, circle, node distance=3cm},
+  doorway/.style={draw, rectangle, minimum height=2cm, text width=2cm},
+  group/.style={draw, rectangle, dashed},
+  skip loop/.style={to path={-- ++(0,#1) -| (\tikztotarget)}}
 }
 
 %% == Document ================================================
@@ -123,7 +125,24 @@ Note! These solutions are not from the department giving the course, and they ha
       hold-back queue, are not yet transferred.
   \end{enumerate}
 
-  \begin{tikzpicture}
+  \begin{tikzpicture}[bend angle=20]
+    \node[process] (p1)               {$p_1$};
+    \node[process] (p2) [above=of p1] {$p_2$}
+    edge [pre, bend right] node[auto, swap] {3} (p1)
+    edge [pre, bend left]  node[auto, swap] {1} (p1)
+    edge [post]            node[auto, swap] {2} (p1);
+    \node[process] (p3) [below=of p1] {$p_3$}
+    edge [pre, bend right] node[auto, swap] {3} (p1)
+    edge [pre, bend left]  node[auto, swap] {1} (p1)
+    edge [post]            node[auto, swap] {2} (p1);
+    \node[process] (p4) [left=of p1]  {$p_4$}
+    edge [pre, bend right] node[auto, swap] {3} (p1)
+    edge [pre, bend left]  node[auto, swap] {1} (p1)
+    edge [post]            node[auto, swap] {2} (p1);
+    \node[process] (p5) [right=of p1] {$p_5$}
+    edge [pre, bend right] node[auto, swap] {3. Agreed sequence}  (p1)
+    edge [pre, bend left]  node[auto, swap] {1. Message} (p1)
+    edge [post]            node[auto, swap] {2. Proposed sequence} (p1);
   \end{tikzpicture}
 }
 
@@ -201,9 +220,39 @@ Note! These solutions are not from the department giving the course, and they ha
   (diameter) of the graph $D(G)$.
 
   \begin{tikzpicture}
+    \node[process] (p1)               {$p_1$};
+    \node[process] (p2) [above=of p1] {$p_2$}
+    edge [pre, bend right] (p1)
+    edge [post, bend left] (p1);
+    \node[process] (p3) [below=of p1] {$p_3$}
+    edge [pre, bend right] (p1)
+    edge [post, bend left] (p1);
+    \node[process] (p4) [left=of p1]  {$p_4$}
+    edge [pre, bend right] (p1)
+    edge [post, bend left] (p1)
+    edge [pre, bend right] (p2)
+    edge [post, bend left] (p2);
+    \node[process] (p5) [right=of p1] {$p_5$}
+    edge [pre, bend right] (p1)
+    edge [post, bend left] (p1)
+    edge [pre, bend right] (p2)
+    edge [post, bend left] (p2);
   \end{tikzpicture}
 
   \begin{tikzpicture}
+    \node[process] (p1)               {$p_1$};
+    \node[process] (p2) [right=of p1] {$p_2$}
+    edge [pre, bend left] (p1)
+    edge [post, bend right] (p1);
+    \node[process] (p3) [right=of p2] {$p_3$}
+    edge [pre, bend left] (p2)
+    edge [post, bend right] (p2);
+    \node[process] (p4) [right=of p3] {$p_4$}
+    edge [pre, bend left] (p3)
+    edge [post, bend right] (p3);
+    \node[process] (p5) [right=of p4] {$p_5$}
+    edge [pre, bend left] (p4)
+    edge [post, bend right] (p4);
   \end{tikzpicture}
 }
 
@@ -238,7 +287,7 @@ Note! These solutions are not from the department giving the course, and they ha
   actually enter the doorway.\\[0.1cm]
 
   The problem with the synchronous doorway is that two processes can
-  cooperate to block a third process. It is not fair.\\[0.1]
+  cooperate to block a third process. It is not fair.\\[0.1cm]
 
   To solve the Dinning philosophers problem, a double doorway is
   needed.\\
@@ -254,6 +303,27 @@ Note! These solutions are not from the department giving the course, and they ha
 
   %% Master thesis p.50.
   \begin{tikzpicture}
+    \node[doorway] (async entry) [] {Asynchronous entry};
+    \node[doorway] (sync entry)  [right=of async entry] {Synchronous entry}
+    edge [pre] (async entry);
+    \node[doorway] (async exit)  [right=of sync entry] {Asynchronous exit}
+    edge [pre] (sync entry);
+    \node[doorway] (dosome)  [right=of async exit] {Do some}
+    edge [pre] (async exit);
+    \node[doorway] (sync exit)  [right=of dosome] {Synchronous exit}
+    edge [pre] (dosome)
+    edge [->,skip loop=-25mm] (async entry);
+
+
+    \begin{scope}
+      \node [group, fit=(async entry) (sync entry) (async exit), label=above:{entry code of double doorway}]
+      (entry box) {};
+    \end{scope}
+
+    \begin{scope}
+      \node [group, fit=(sync exit), label=above:{exit code of double doorway}]
+      {};
+    \end{scope}
   \end{tikzpicture}
 }
 
@@ -328,7 +398,47 @@ Note! These solutions are not from the department giving the course, and they ha
   behavior of the protocol when time-outs are triggered and processes
   are recovered after crashing.}
 \solution{
-  \begin{tikzpicture}
+  \begin{tikzpicture}[node distance=1cm]
+    \node[process] (init) [] {Init};
+    \node[process] (wait) [below=of init] {Wait}
+    edge [pre]
+    node [label=15:{commit}, label=-15:{vote-request}] {}
+    (init);
+    \node[process] (abort) [below=of wait] {Abort}
+    edge [pre]
+    node [label=180-15:{vote-abort}, label=180+15:{global-abort}] {}
+    (wait);
+    \node[process] (precommit) [right=of abort] {Precommit}
+    edge [pre]
+    node [label=15:{vote-commit}, label=-15:{prepare-commit}] {}
+    (wait);
+    \node[process] (commit) [below=of precommit] {Commit}
+    edge [pre]
+    node [label=15:{ready-commit}, label=-15:{global-commit}] {}
+    (precommit);
+  \end{tikzpicture}
+
+  \begin{tikzpicture}[node distance=1cm]
+    \node[process] (init) [] {Init};
+    \node[process] (ready) [below=of init] {Ready}
+    edge [pre]
+    node [label=15:{vote-request}, label=-15:{ready-commit}] {}
+    (init);
+    \node[process] (abort) [below=of wait] {Abort}
+    edge [pre]
+    node [label=180-15:{global-abort}, label=180+15:{ACK}] {}
+    (ready)
+    edge [pre, bend left]
+    node [label=15:{vote-request}, label=-15:{vote-abort}] {}
+    (init);
+    \node[process] (precommit) [right=of abort] {Precommit}
+    edge [pre]
+    node [label=15:{prepare-commit}, label=-15:{ready-commit}] {}
+    (ready);
+    \node[process] (commit) [below=of precommit] {Commit}
+    edge [pre]
+    node [label=15:{global-commit}, label=-15:{ACK}] {}
+    (precommit);
   \end{tikzpicture}
 }
 
