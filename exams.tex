@@ -343,7 +343,81 @@ Note! These solutions are not from the department giving the course, and they ha
   the generals digitally sign their messages.
 }
 \solution{
+  The Byzantine generals problem differs from consensus in that a distinguished
+  process supplies a value that the others are to agree upon, instead of each of them
+  proposing a value. The system needs to be synchronous because a crashed process is
+  indistinguishable from a slow one in an asynchronous system.\\
 
+  The number of faulty processes $f$ allowed to still reach consensus when messages are not
+  digitally signed is $ f < N/3 $, where $N$ is the total number of processes.
+
+  \begin{minipage}{0.45\linewidth}
+    \begin{tikzpicture}
+      \node[process] (g1) at (90:2) [label=above:{Commander}] {$p_1$};
+      \node[process] (g2) at (210:2) {$p_2$}
+      edge [pre] node [left] {$1:v$} (g1);
+      \node[process, fill=black!25] (g3) at (330:2) {$p_3$}
+      edge [pre] node [right] {$1:v$} (g1)
+      edge [pre, bend right] node [above] {$2:1:v$} (g2)
+      edge [post, bend left] node [below] {$3:1:u$} (g2);
+    \end{tikzpicture}
+  \end{minipage}
+  \begin{minipage}{0.45\linewidth}
+    \begin{tikzpicture}
+      \node[process, fill=black!25] (g1) at (90:2) [label=above:{Commander}] {$p_1$};
+      \node[process] (g2) at (210:2) {$p_2$}
+      edge [pre] node [left] {$1:w$} (g1);
+      \node[process] (g3) at (330:2) {$p_3$}
+      edge [pre] node [right] {$1:x$} (g1)
+      edge [pre, bend right] node [above] {$2:1:w$} (g2)
+      edge [post, bend left] node [below] {$3:1:x$} (g2);
+    \end{tikzpicture}
+  \end{minipage}
+
+  In the picture above, messsage $2:1:v$ can be read as $p_2$ says that $p_1$
+  ordered $v$. In the left picture, $p_2$ gets one order from $p_1$
+  and a different order from $p_3$; there is no telling who is
+  faulty. The right picture, where the commander is faulty, the same
+  conclusion can be drawn. In neither cases, $p_2$ cannot distinguish
+  which process that is faulty.
+
+  The solution to this problem is to digitally sign messages.
+
+  The assumption is that every message carries a signatue, and the
+  signature cannot be forged, hence alteration of the contents of a
+  sign message can be detected. Every non-faulty process can verify
+  the signature of any other non-faulty process.
+
+  Any number $f$ of faulty processes is allowed.
+
+  \begin{minipage}{0.45\linewidth}
+    \begin{tikzpicture}
+      \node[process] (g1) at (90:2) [label=above:{Commander}] {$p_1$};
+      \node[process] (g2) at (210:2) {$p_2$}
+      edge [pre] node [left] {$v:S_{p1}$} (g1);
+      \node[process, fill=black!25] (g3) at (330:2) {$p_3$}
+      edge [pre] node [right] {$v:S_{p1}$} (g1)
+      edge [pre, bend right] node [above] {$v:S_{p1}:S_{p2}$} (g2)
+      edge [post, bend left] node [below] {$u:S'_{p1}:S_{p3}$} (g2);
+    \end{tikzpicture}
+  \end{minipage}
+  \begin{minipage}{0.45\linewidth}
+    \begin{tikzpicture}
+      \node[process, fill=black!25] (g1) at (90:2) [label=above:{Commander}] {$p_1$};
+      \node[process] (g2) at (210:2) {$p_2$}
+      edge [pre] node [left] {$w:S_{p1}$} (g1);
+      \node[process] (g3) at (330:2) {$p_3$}
+      edge [pre] node [right] {$x:S_{p1}$} (g1)
+      edge [pre, bend right] node [above] {$w:S_{p1}:S_{p2}$} (g2)
+      edge [post, bend left] node [below] {$x:S_{p1}:S_{p3}$} (g2);
+    \end{tikzpicture}
+  \end{minipage}
+
+  In the pictures above, $x:S_{p1}:S_{p2}$ is the value x, signed by
+  both $p_1$ and $p_2$. In the left picture, process $p_2$ discovers
+  that $p_1$s signature has been tampered with; $p_3$ is the traitor.
+  In the right picture, both processes $p_2, p_3$ get non-tampered
+  messages, with different values; $p_1$ is the traitor.
 }
 
 \section{2012-08}
