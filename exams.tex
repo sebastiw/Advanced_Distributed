@@ -4,6 +4,7 @@
 \usepackage{fancyhdr}
 \usepackage{hyperref}
 \usepackage{tikz}
+\usepackage{listings}
 \usetikzlibrary{decorations.pathmorphing,shapes,arrows,positioning,calc,fit,petri}
 
 %% == Commands ================================================
@@ -22,7 +23,7 @@
   \parbox[t]{\textwidth}{#1 \parbox[t]{0.95\textwidth}{#2}}\\
 }
 \newcommand{\seealso}[1]{\\\textit{See also:} #1}
-\newcommand{\solution}[1]{\\\horrule{0.5pt}\\[3pt]\textit{Solution: }\\\begin{minipage}{\textwidth}#1\end{minipage}}
+\newcommand{\solution}[1]{\horrule{0.5pt}\\[3pt]\textit{Solution: }\\\begin{minipage}{\textwidth}#1\end{minipage}}
 \newcommand{\highlight}[1]{{\color{blue}#1}}
 
 
@@ -45,6 +46,8 @@
   group/.style={draw, rectangle, dashed},
   skip loop/.style={to path={-- ++(0,#1) -| (\tikztotarget)}}
 }
+
+\newsavebox{\userinput}
 
 %% == Document ================================================
 \begin{document}
@@ -338,6 +341,7 @@ Note! These solutions are not from the department giving the course, and they ha
 }
 
 \points{5}
+\label{2012-03:byzantine}
 \question{
   Show that Byzantine agreement can be reached for three generals, if
   the generals digitally sign their messages.
@@ -427,6 +431,22 @@ Note! These solutions are not from the department giving the course, and they ha
   in a synchronous system, using a reliable multicast and a solution
   to the consensus problem.
 }
+\solution{
+  R-multicast(g, m)
+    uniquely tag m with sender and sequence number
+    send(m) to all processes in group g (including self)
+  end
+
+  R-deliver(m)
+  upon receive(g, m) where process p in g do
+  if p have not already delivered m
+  then if p is not sender of m
+  then send m to all neighbors in g
+  endif
+  deliver(m)
+  endif
+  end
+}
 
 \points{5}
 \question[a)]{
@@ -437,10 +457,13 @@ Note! These solutions are not from the department giving the course, and they ha
   Can Byzantine agreement be reached for 8 generals, with 3 of them
   faulty, if the generals digitally sign their messages?
 }
+\solution{
+  see \ref{2012-03:byzantine}
+}
 
 \points{8}
 \question{
-  A thee-phase commit protocol has the following parts \\
+  A three-phase commit protocol has the following parts \\
   \textbf{Phase 1:} is the same as the two phase commit.\\
   \textbf{Phase 2:} the coordinator collects the votes and makes a
   decision; if it is No, it aborts and informs participants hat voted
@@ -456,6 +479,17 @@ Note! These solutions are not from the department giving the course, and they ha
   ``uncertain'' period due to the failure of the coordinator or other
   participants. Assume that communication does not fail.
 }
+\solution{
+  The system is synchronous because it is impossible in an
+  asynchronous system to distinguish between a crashed process and a
+  slow one.
+
+  If the state of the cohorts is before precommit and no
+  precommit-message is sent from the coordinator, then each cohort
+  assumes a failure and abort the commit. If the cohorts have received
+  a precommit-message, but does not get a commit-message from the
+  coordinator, then they will automatically commit.
+}
 
 \points{10}
 \question{
@@ -464,6 +498,62 @@ Note! These solutions are not from the department giving the course, and they ha
   together with the other processors of the network can use in order to
   find Q or to find that Q is not part of the network. Prove the time
   complexity of the algorithm.
+}
+\begin{lrbox}{\userinput}
+  \begin{minipage}{\linewidth}
+    \begin{lstlisting}[mathescape]
+      init_echo () {
+        N = {q | q is a neighbor of p}
+        for each q in N
+        send token to q
+        counter = 0
+        while( counter < |N| ) {
+          receive token
+          counter++
+        }
+        terminate
+      }
+
+      echo() {
+        receive token from parent
+        N = {q | q is neighbor of p != parent}
+        for each q in N
+        send token to q
+        counter = 0
+        while( counter < |N| ) {
+          receive token
+          counter++
+        }
+        send token to parent
+        terminate
+      }
+    \end{lstlisting}
+  \end{minipage}
+\end{lrbox}
+
+\solution{
+  Our assumption is that an initiator $P$ wants to find out if a
+  process $Q$ exists in G(V,E).
+
+
+  Broadcasting with ACK = Echo algorithm\\
+  Creates a spanning tree.
+
+  \usebox{\userinput}
+
+  This algorithm can be used, if we change the answer to the parent to
+  either ``i have Q in my section of the graph'' or ``i dont know
+  where Q is''.
+  When the initiator $P$ have collected all answers, then he knows if
+  $Q$ is part of the network or not.
+
+  Phase 1 (when all nodes have been reached) takes $O(D)$ time, where
+  $D$ is the depth of the graph.
+  Phase 2, the distance between the initiator and processes having
+  received all acknowledgements have been decreased by at least 1. So
+  it takes $O(n)$ time for this phase to complete.
+  Because $ n >= d $, it takes $O(n)$ time to complete the whole
+  algorithm.
 }
 
 \points{15}
@@ -657,7 +747,7 @@ Compute the time complexity and communication complexity of
       book.)
   \end{itemize}
 }
-\solution[a)]{
+\solution{
   A replicated shared object service is said to be
   \highlight{linearizable} if \textit{for any execution} there is
   some interleaving of the series of operations issued by all the
