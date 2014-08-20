@@ -75,16 +75,20 @@ Note! These solutions are not from the department giving the course, and they ha
 \section{Tenta 2012-03-05}
 
 \points{10}
-\question{Give an example of an execution that is sequential
-  consistent but not linearizable. \\ Show that every linearizable
-  history is sequential consistent.}
+\question{
+  Give an example of an execution that is sequential consistent but
+  not linearizable. \\
+  Show that every linearizable history is sequential consistent.
+}
 \seealso{\ref{2014-03:linearizability}, \ref{2013-08:linearizability}, \ref{2013-03:linearizability}}
 \solution{See: \ref{2013-03:linearizability}}
 
 \points{10}
-\question{Give a specification of a state machine replication
-  abstraction and an underlying algorithm to implement it using a
-  total order broadcast abstraction.}
+\question{
+  Give a specification of a state machine replication abstraction and
+  an underlying algorithm to implement it using a total order broadcast
+  abstraction.
+}
 \oklarhet{Bad formulation of the question?}
 \solution{
   An replica manager (RM) can be a state machine, which has the
@@ -151,7 +155,8 @@ Note! These solutions are not from the department giving the course, and they ha
 \question{
   Is it possible to implement a total order broadcast
   deterministically in asynchronous systems with message loses? \\
-  Provide an algorithm or an impossibility proof.}
+  Provide an algorithm or an impossibility proof.
+}
 \solution{
   No, it is not possible. Proof equivalent to the consensus problem.\\
   Consensus problem:\\
@@ -181,11 +186,12 @@ Note! These solutions are not from the department giving the course, and they ha
 }
 
 \points{10}
-\question{What are the properties that a causal broadcast must
-  satisfy? \\ Compare the causal broadcast property with the following
-  property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
-  \rightarrow m_2$, then the process must deliver $m_1$ before
-  $m_2$.''}
+\question{
+  What are the properties that a causal broadcast must satisfy? \\
+  Compare the causal broadcast property with the following property:
+  ``if a process delivers messages $m_1$ and $m_2$, and $m_1 \rightarrow
+  m_2$, then the process must deliver $m_1$ before $m_2$.''
+}
 \oklarhet{Unsure about the comparison in the question and answer.}
 \solution{
   Causality properties:
@@ -208,12 +214,15 @@ Note! These solutions are not from the department giving the course, and they ha
 }
 
 \points{10}
-\question{The flooding algorithm is a straight forward broadcasting
-  algorithm. The initiator sends to all its neighbors a message of
-  kind broadcast. When a process receives message broadcast for the
-  first time, it sends to all other adjacent processes further
-  broadcast messages. \\ What is the Time and Message Complexity of
-  the algorithm? Please provide a complexity analysis.}
+\question{
+  The flooding algorithm is a straight forward broadcasting
+  algorithm. The initiator sends to all its neighbors a message of kind
+  broadcast. When a process receives message broadcast for the first
+  time, it sends to all other adjacent processes further broadcast
+  messages. \\
+  What is the Time and Message Complexity of the algorithm? Please
+  provide a complexity analysis.
+}
 \solution{
   In a graph $G(V,E)$ where $V$ is the processes, the number of
   messages needed is $2|E|$, and the time complexity is the depth
@@ -257,11 +266,12 @@ Note! These solutions are not from the department giving the course, and they ha
 }
 
 \points{10}
-\question{The algorithm by Choy and Singh uses two Doorways. The
-  Asynchronous and the Synchronous Doorway. \\ Describe them in
-  pseudo-code and informally. \\ Use both Doorways to construct a
-  solution to the Dinning Philosophers problem for a system of 3
-  philosophers.}
+\question{
+  The algorithm by Choy and Singh uses two Doorways. The Asynchronous
+  and the Synchronous Doorway. \\ Describe them in pseudo-code and
+  informally. \\ Use both Doorways to construct a solution to the
+  Dinning Philosophers problem for a system of 3 philosophers.
+}
 \solution{
   Let $N_p$ denote the set of neighbors of process $p$ and $L_{pq}$
   the actual state of $q$ known by $p$. If neighbor processes
@@ -328,23 +338,35 @@ Note! These solutions are not from the department giving the course, and they ha
 }
 
 \points{5}
-\question{Show that Byzantine agreement can be reached for three
-  generals, if the generals digitally sign their messages.}
+\question{
+  Show that Byzantine agreement can be reached for three generals, if
+  the generals digitally sign their messages.
+}
+\solution{
+
+}
 
 \section{2012-08}
 \points{10}
-\question{Construct a solution to reliable, totally ordered multicast
+\question{
+  Construct a solution to reliable, totally ordered multicast
   in a synchronous system, using a reliable multicast and a solution
-  to the consensus problem.}
+  to the consensus problem.
+}
 
 \points{5}
-\question[a)]{Can Byzantine agreement be reached for 8 generals, with 3 of
-  them faulty?}
-\question[b)]{Can Byzantine agreement be reached for 8 generals, with 3 of
-  them faulty, if the generals digitally sign their messages?}
+\question[a)]{
+  Can Byzantine agreement be reached for 8 generals, with 3 of them
+  faulty?
+}
+\question[b)]{
+  Can Byzantine agreement be reached for 8 generals, with 3 of them
+  faulty, if the generals digitally sign their messages?
+}
 
 \points{8}
-\question{A thee-phase commit protocol has the following parts \\
+\question{
+  A thee-phase commit protocol has the following parts \\
   \textbf{Phase 1:} is the same as the two phase commit.\\
   \textbf{Phase 2:} the coordinator collects the votes and makes a
   decision; if it is No, it aborts and informs participants hat voted
@@ -358,36 +380,45 @@ Note! These solutions are not from the department giving the course, and they ha
   arrives they Commit. \\
   Explain how this protocol avoids delay to participants during their
   ``uncertain'' period due to the failure of the coordinator or other
-  participants. Assume that communication does not fail.}
+  participants. Assume that communication does not fail.
+}
 
 \points{10}
-\question{A processor P is part of a network G(V,E). P believes that
-  processor Q is also connected to the network. Describe a protocol
-  that P together with the other processors of the network can use in
-  order to find Q or to find that Q is not part of the network. Prove
-  the time complexity of the algorithm.}
+\question{
+  A processor P is part of a network G(V,E). P believes that processor
+  Q is also connected to the network. Describe a protocol that P
+  together with the other processors of the network can use in order to
+  find Q or to find that Q is not part of the network. Prove the time
+  complexity of the algorithm.
+}
 
 \points{15}
-\question{Give a solution to the dinning philosophers problem. Prove
-  the time complexity of the algorithm.}
+\question{
+  Give a solution to the dinning philosophers problem. Prove the time
+  complexity of the algorithm.
+}
 
 \points{12}
-\question{A quorum consensus method with three replicas is used for
-  replication. The parameters of the replication system are described
-  in the following table. Calculate: \textit{i)} the read latency,
-  \textit{ii)} the write latency, \textit{iii)} the blocking
-  probability of a read and \textit{iv)} the blocking probability of a
-  write.}
+\question{
+  A quorum consensus method with three replicas is used for
+  replication. The parameters of the replication system are described in
+  the following table. Calculate: \textit{i)} the read latency,
+  \textit{ii)} the write latency, \textit{iii)} the blocking probability
+  of a read and \textit{iv)} the blocking probability of a write.
+}
 
 \section{Tenta 2014-03-12}
 \points{10}
 \label{2014-03:linearizability}
-\question[a)]{Give the definitions of Linearizability and Sequential
-  Consistency.}
-\question[b)]{A correctness property $\rho$ is compositional if, whenever
+\question[a)]{
+  Give the definitions of Linearizability and Sequential Consistency.
+}
+\question[b)]{
+  A correctness property $\rho$ is compositional if, whenever
   each object in the system satisfies $\rho$, the system as a whole
   satisfies $\rho$. Is Sequential Consistency compositional? \\
-  If yes explain why, if no give an example.}
+  If yes explain why, if no give an example.
+}
 
 \points{10}
 \label{2014-03:phase-commit}
@@ -444,23 +475,31 @@ Note! These solutions are not from the department giving the course, and they ha
 
 
 \points{5}
-\question{What are the properties that a causal broadcast must
-  satisfy? \\ Compare the causal broadcast property with the following
-property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
-\rightarrow m_2$, then the process must deliver $m_1$ before $m_2$.''}
+\question{
+  What are the properties that a causal broadcast must satisfy? \\
+  Compare the causal broadcast property with the following property:
+  ``if a process delivers messages $m_1$ and $m_2$, and $m_1 \rightarrow
+  m_2$, then the process must deliver $m_1$ before $m_2$.''
+}
 
 \points{10}
-\question[a)]{Describe an algorithm for leader election on a ring
-  topology. All processes have unique ids and the system is
-  asynchronous. Any process can initiate the leader election protocol
-  at any time.}
-\question[b)]{Compute the time complexity and communication complexity of
-  your algorithm.}
-\question[c)]{Is it possible to design a symmetric algorithm for leader
-  election? If yes, provide such an algorithm, if no provide a proof.}
+\question[a)]{
+  Describe an algorithm for leader election on a ring topology. All
+  processes have unique ids and the system is asynchronous. Any process
+  can initiate the leader election protocol at any time.
+}
+\question[b)]{
+Compute the time complexity and communication complexity of
+  your algorithm.
+}
+\question[c)]{
+  Is it possible to design a symmetric algorithm for leader
+  election? If yes, provide such an algorithm, if no provide a proof.
+}
 
 \points{15}
-\question[a)]{Eric wants to build a replicated storage system. In his
+\question[a)]{
+  Eric wants to build a replicated storage system. In his
   system there is only one client. The client performs just one
   storage operation (read or write) at a time, waiting for each
   operation to complete before starting the next. Eric wants
@@ -478,8 +517,10 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
   replication. \\
   Please explain why. Eric wants to formalize the consistency
   properties of the replication system. Is it sequential consistent?
-  Is it a linearizable one? Please explain your answer.}
-\question[b)]{Eric decides to change his design and uses now the gossip
+  Is it a linearizable one? Please explain your answer.
+}
+\question[b)]{
+  Eric decides to change his design and uses now the gossip
   architecture that lazily synchronizes the two servers. The single
   client contacts any server that is available and gets the value that
   this server has, updates are also performed on the first available
@@ -488,36 +529,45 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
   What is the availability that he can achieve? Eric wants to
   formalize the consistency properties of the replication system in
   case where there are no failures. Is it sequential consistent? Is it
-  a linearizable one? Please explain your answer.}
-\question[c)]{Eric decides to change his design and uses now nine replicas
+  a linearizable one? Please explain your answer.
+}
+\question[c)]{
+  Eric decides to change his design and uses now nine replicas
   and quorums to ensure strong consistency and availability. What are
   the constraints on the sizes of read and write quorums? What is the
   availability that he can achieve? Give an example of quorum
   processing involving a write, two reads, then a write. Eric wants
   to formalize the consistency properties of the replication
   system. Is it sequential consistent? Is it a linearizable one?
-  Please explain why?}
+  Please explain why?
+}
 
 \points{10}
-\question{The algorithm by Choy and Singh uses two Doorways. The
-  Asynchronous and the Synchronous Doorway. \\ Describe them in
-  pseudo-code and informally. \\
+\question{
+  The algorithm by Choy and Singh uses two Doorways. The
+  Asynchronous and the Synchronous Doorway. \\
+  Describe them in pseudo-code and informally. \\
   If we use the Asynchronous Doorway together with coloring, is this
   algorithm going to give us a solution to the resource allocation
   problem (e.g. is it going to guarantee mutual exclusion and
   no-starvation)? Please provide a proof sketch or a
   counterexample. \\
-  What is the time complexity of this algorithm?}
+  What is the time complexity of this algorithm?
+}
 
 \section{Tenta 2013-03-16}
 \points{10}
 \label{2013-03:linearizability}
-\question[a)]{Give the definitions of Linearizability and Sequential
-  Consistency}
-\question[b)]{Give an example pseudocode for a simple program that
+\question[a)]{
+  Give the definitions of Linearizability and Sequential Consistency
+}
+\question[b)]{
+  Give an example pseudocode for a simple program that
   would operate correctly with sequential consistency but incorrectly
-  with linearizability. (Briefly explain your answer.)}
-\question[c)]{Describe the advantages and disadvantages of using each
+  with linearizability. (Briefly explain your answer.)
+}
+\question[c)]{
+  Describe the advantages and disadvantages of using each
   for an application, paying particular attention to any assumptions
   you must make about the users behaviour. As two example applications
   you can consider:
@@ -531,8 +581,9 @@ property: ``if a process delivers messages $m_1$ and $m_2$, and $m_1
       another, and a hit debilitates the unfortunate recipient for a
       limited time. (Application II is from Chapter 18th of the course
       book.)
-  \end{itemize}}
-\solution{a)
+  \end{itemize}
+}
+\solution[a)]{
   A replicated shared object service is said to be
   \highlight{linearizable} if \textit{for any execution} there is
   some interleaving of the series of operations issued by all the
