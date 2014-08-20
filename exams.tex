@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
-\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 \usepackage{fancyhdr}
 \usepackage{hyperref}
 \usepackage{tikz}
@@ -23,7 +23,7 @@
   \parbox[t]{\textwidth}{#1 \parbox[t]{0.95\textwidth}{#2}}\\
 }
 \newcommand{\seealso}[1]{\\\textit{See also:} #1}
-\newcommand{\solution}[1]{\horrule{0.5pt}\\[3pt]\textit{Solution: }\\\begin{minipage}{\textwidth}#1\end{minipage}}
+\newcommand{\solution}[1]{\\\horrule{0.5pt}\\[3pt]\textit{Solution: }\\[0.1cm]\begin{minipage}{\textwidth}#1\end{minipage}}
 \newcommand{\highlight}[1]{{\color{blue}#1}}
 
 
@@ -499,6 +499,7 @@ Note! These solutions are not from the department giving the course, and they ha
   find Q or to find that Q is not part of the network. Prove the time
   complexity of the algorithm.
 }
+%
 \begin{lrbox}{\userinput}
   \begin{minipage}{\linewidth}
     \begin{lstlisting}[mathescape]
@@ -530,7 +531,7 @@ Note! These solutions are not from the department giving the course, and they ha
     \end{lstlisting}
   \end{minipage}
 \end{lrbox}
-
+%
 \solution{
   Our assumption is that an initiator $P$ wants to find out if a
   process $Q$ exists in G(V,E).
@@ -548,10 +549,9 @@ Note! These solutions are not from the department giving the course, and they ha
   $Q$ is part of the network or not.
 
   Phase 1 (when all nodes have been reached) takes $O(D)$ time, where
-  $D$ is the depth of the graph.
-  Phase 2, the distance between the initiator and processes having
-  received all acknowledgements have been decreased by at least 1. So
-  it takes $O(n)$ time for this phase to complete.
+  $D$ is the depth of the graph. In Phase 2, the distance between the 
+  initiator and processes having received all acknowledgements have been 
+  decreased by at least 1. So it takes $O(n)$ time for this phase to complete.
   Because $ n >= d $, it takes $O(n)$ time to complete the whole
   algorithm.
 }
@@ -560,7 +560,70 @@ Note! These solutions are not from the department giving the course, and they ha
 \question{
   Give a solution to the dinning philosophers problem. Prove the time
   complexity of the algorithm.
+}\\
+%
+\begin{lrbox}{\userinput}
+  \begin{minipage}{\linewidth}
+    Let $G(V,E)$ be a communication graph of the modeled network, for which $V$ denotes the set
+    of processes and $E$ the set of links between processes of $V$. Then, every process $p \in V$
+    represents a philosopher, who works independently and may request resources at any time. Further
+    for every resource which is shared between two processes $p$ and $q$ there exist a link $(p,q) \in E$
+    and vice versa. Thus, every process can request directly resources from its neighbors. A resource
+    is represented by a token called \textit{fork}.\\
+    It is assumed that every process can be in one of the following states: \textit{thinking, hungry} 
+    or \textit{eating}. A process in state \textit{thinking} is not interesed in its neighbors resources
+    and sends requested forks to its neighbors. A process will switch from \textit{thinking, hungry} when
+    it wants to access its resource. Then it tries to collect all forks from its neighbors. When a process
+    in state \textit{hungry} collects all forks from its neighbors it will start accessing its resources. 
+    It changes to state \textit{eating} in which it keeps all forks until it finishes with accessing the
+    resources and changes to thinking again. 
+    \begin{enumerate}
+	\item The algorithm is initialized by an acyclic precedence graph H and all processes
+	with lower precedence own dirty forks while processes with higher precedence own
+	request tokens. All processes are initially thinking, i.e. they are not interested
+	in their resources. 
+	\item A process which becomes hungry will send all its request token to neighbor 
+	processes and wait until it received all forks. 
+	\item A process which received all forks will change its state to \textit{eating}
+	\item A process which leaves the critical section (stops eating) changes the state 
+	of all its forks to \textit{dirty}. Then for all held request token the respective
+	fork is sent to neighbor processes.	
+    \end{enumerate}
+    The above steps assume the following: 
+    \begin{itemize}
+	\item \textit{Receiving a request token for fork f}: If processors state is different
+	than \textit{eating} and $f$ is dirty then $f$ will be sent to the requesting processor.
+	If processors state was also \textit{hungry} then the request token will also be sent back.
+	\item \textit{Receiving a fork f}: The state of $f$ will be set to clean. 
+    \end{itemize}
+  \end{minipage}
+\end{lrbox}
+%
+\solution{
+  See \ref{2014-03:doorways} for solution with doorways.\\ 
+  In dining philosophers problem five or more philosophers (processes) dines
+  together at a table. The philosophers has three states: \textit{thinking, hungry} and \textit{eating}.
+  Between each of the two philosophers lies one fork, i.e. the philosophers shares forks between eachother.
+  In order for a philosopher to eat he must aquire both his left and his right fork. The main problem is to
+  guarantee no deadlock, where no one can eat because no one has two forks, and no starvation, where one
+  hungry philosopher never gets to eat.\\
+  To solve this problem, the Chandy and Misra algorithm can be used, as described below:\\\\
+  \usebox{\userinput}
+  Time complexity:
+  A process at depth $k$ will have to wait for forks from neighbors with lower precedence time $2(d+l)$
+  plus the time from neighbors of depth $k-1$ needs to be able to eat.
+
+From the correctness proof it can be concluded that a process at depth k will have
+to wait for forks from neighbours with lower precedence time 2( d + l ) plus the time
+neighbours of depth k 1 needs to be able to eat. This results in following recursion:
+;
+T ( k ) = T ( k ; 1) + 4( d + l )
+4( k + 1)( d + l )
+Although the acyclic graph is initially of depth , the worst case depth is
+transformations of H . Therefore, a process must wait time O ( n ( d + l )) .
+
 }
+
 
 \points{12}
 \question{
@@ -570,6 +633,8 @@ Note! These solutions are not from the department giving the course, and they ha
   \textit{ii)} the write latency, \textit{iii)} the blocking probability
   of a read and \textit{iv)} the blocking probability of a write.
 }
+
+
 
 \section{Tenta 2014-03-12}
 \points{10}
@@ -707,6 +772,7 @@ Compute the time complexity and communication complexity of
 }
 
 \points{10}
+\label{2014-03:doorways}
 \question{
   The algorithm by Choy and Singh uses two Doorways. The
   Asynchronous and the Synchronous Doorway. \\
