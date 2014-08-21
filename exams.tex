@@ -1,5 +1,4 @@
 \documentclass[a4paper]{article}
-\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{fancyhdr}
 \usepackage{hyperref}
@@ -7,7 +6,8 @@
 \usepackage{listings}
 \usepackage{caption}
 \usetikzlibrary{decorations.pathmorphing,shapes,arrows,positioning,calc,fit,petri}
-\setlength\parindent{0pt}
+\usepackage{ifthen}
+
 %% == Commands ================================================
 \newcommand{\coursecode}{TDA297}
 \newcommand{\coursename}{Distributed Systems II (Advanced)}
@@ -20,11 +20,16 @@
 }
 \newcommand{\points}[1]{\subsection{} \textit{#1 points}\\}
 \newcommand{\question}[2][]{
-  \noindent
-  \parbox[t]{\textwidth}{#1 \parbox[t]{0.95\textwidth}{#2}}\\
-}
+  \parbox[t]{\textwidth}{
+    \ifthenelse{\equal{#1}{}}{}{#1)}
+    \parbox[t]{0.95\textwidth}{#2}}\\}
 \newcommand{\seealso}[1]{\\\textit{See also:} #1}
-\newcommand{\solution}[1]{\\\horrule{0.5pt}\\[3pt]\textit{Solution: }\\[0.1cm]\begin{minipage}{\textwidth}#1\end{minipage}}
+\newcommand{\solution}[2][]{
+  \ifthenelse{\equal{#1}{} \or \equal{#1}{a}}{\\[3pt]\textit{Solution: }\\[0.1cm]}{}
+  \parbox[t]{\textwidth}{
+    \ifthenelse{\equal{#1}{}}{}{#1)}
+    \parbox[t]{0.95\textwidth}{#2}}\\
+}
 \newcommand{\highlight}[1]{{\color{blue}#1}}
 
 
@@ -48,6 +53,8 @@
   skip loop/.style={to path={-- ++(0,#1) -| (\tikztotarget)}}
 }
 
+\setlength\parindent{0pt}
+
 \newsavebox{\userinput}
 
 %% == Document ================================================
@@ -62,9 +69,8 @@
 \Large \doctitle \\
 \normalsize % Revert to normal sized font
 \horrule{2pt} \\[0.1cm] % Thick bottom horizontal rule
-\begin{tabular}{ l r }
-Av \authorname & \authormail
-\end{tabular}\\[0.1cm]
+Av \authorname \\
+\authormail\\[0.1cm]
 \footnotesize \today\\[0.4cm]
 \end{center}
 {\footnotesize
@@ -73,7 +79,7 @@ Note! These solutions are not from the department giving the course, and they ha
 }
 \horrule{0.5pt} % Thin top horizontal rule
 \normalsize % Revert to normal sized font
-\\[2.5cm]
+\\
 
 %% == Solutions ================================================
 \section{Tenta 2012-03-05}
@@ -178,10 +184,11 @@ Note! These solutions are not from the department giving the course, and they ha
       value.
     \item[Validity] if all processes that propose a value proposes $v$
       then all correct processes eventually decide $v$.
-    \item[Agreement] if a correct process decides on value $v$, then all correct
-      processes eventually decides on $v$.
+    \item[Agreement] if a correct process decides on value $v$, then
+      all correct processes eventually decides on $v$.
     \item[Integrity] every process decides at most once, and if it
-      decides some value $v$ then $v$ must have been proposed by some process.
+      decides some value $v$ then $v$ must have been proposed by some
+      process.
   \end{description}
 
   %% Maybe tikz?
@@ -389,7 +396,7 @@ Note! These solutions are not from the department giving the course, and they ha
 
   The solution to this problem is to digitally sign messages.
 
-  The assumption is that every message carries a signatue, and the
+  The assumption is that every message carries a signature, and the
   signature cannot be forged, hence alteration of the contents of a
   sign message can be detected. Every non-faulty process can verify
   the signature of any other non-faulty process.
@@ -433,29 +440,38 @@ Note! These solutions are not from the department giving the course, and they ha
   in a synchronous system, using a reliable multicast and a solution
   to the consensus problem.
 }
-\solution{
-  R-multicast(g, m)
-    uniquely tag m with sender and sequence number
-    send(m) to all processes in group g (including self)
-  end
+%
+\begin{lrbox}{\userinput}
+  \begin{minipage}{\linewidth}
+    \begin{lstlisting}[mathescape]
+      R-multicast(g, m)
+        uniquely tag m with sender and sequence number
+        send(m) to all processes in group g (including self)
+      end
 
-  R-deliver(m)
-  upon receive(g, m) where process p in g do
-  if p have not already delivered m
-  then if p is not sender of m
-  then send m to all neighbors in g
-  endif
-  deliver(m)
-  endif
-  end
+      R-deliver(m)
+        upon receive(g, m) where process p in g do
+        if( p have not already delivered m ) then
+          if( p is not sender of m ) then
+            send m to all neighbors in g
+          endif
+          deliver(m)
+        endif
+      end
+    \end{lstlisting}
+  \end{minipage}
+\end{lrbox}
+%
+\solution{
+  \usebox{\userinput}
 }
 
 \points{5}
-\question[a)]{
+\question[a]{
   Can Byzantine agreement be reached for 8 generals, with 3 of them
   faulty?
 }
-\question[b)]{
+\question[b]{
   Can Byzantine agreement be reached for 8 generals, with 3 of them
   faulty, if the generals digitally sign their messages?
 }
@@ -547,8 +563,8 @@ Note! These solutions are not from the department giving the course, and they ha
   $Q$ is part of the network or not.
 
   Phase 1 (when all nodes have been reached) takes $O(D)$ time, where
-  $D$ is the depth of the graph. In Phase 2, the distance between the 
-  initiator and processes having received all acknowledgements have been 
+  $D$ is the depth of the graph. In Phase 2, the distance between the
+  initiator and processes having received all acknowledgements have been
   decreased by at least 1. So it takes $O(n)$ time for this phase to complete.
   Because $ n >= d $, it takes $O(n)$ time to complete the whole
   algorithm.
@@ -562,66 +578,80 @@ Note! These solutions are not from the department giving the course, and they ha
 %
 \begin{lrbox}{\userinput}
   \begin{minipage}{\linewidth}
-    Let $G(V,E)$ be a communication graph of the modeled network, for which $V$ denotes the set
-    of processes and $E$ the set of links between processes of $V$. Then, every process $p \in V$
-    represents a philosopher, who works independently and may request resources at any time. Further
-    for every resource which is shared between two processes $p$ and $q$ there exist a link $(p,q) \in E$
-    and vice versa. Thus, every process can request directly resources from its neighbors. A resource
-    is represented by a token called \textit{fork}.\\
-    It is assumed that every process can be in one of the following states: \textit{thinking, hungry} 
-    or \textit{eating}. A process in state \textit{thinking} is not interesed in its neighbors resources
-    and sends requested forks to its neighbors. A process will switch from \textit{thinking, hungry} when
-    it wants to access its resource. Then it tries to collect all forks from its neighbors. When a process
-    in state \textit{hungry} collects all forks from its neighbors it will start accessing its resources. 
-    It changes to state \textit{eating} in which it keeps all forks until it finishes with accessing the
-    resources and changes to thinking again. 
+    Let $G(V,E)$ be a communication graph of the modeled network, for
+    which $V$ denotes the set of processes and $E$ the set of links
+    between processes of $V$. Then, every process $p \in V$ represents a
+    philosopher, who works independently and may request resources at any
+    time. Further for every resource which is shared between two processes
+    $p$ and $q$ there exist a link $(p,q) \in E$ and vice verse. Thus,
+    every process can request directly resources from its neighbors. A
+    resource is represented by a token called \textit{fork}.
+
+    It is assumed that every process can be in one of the following
+    states: \textit{thinking, hungry} or \textit{eating}. A process in
+    state \textit{thinking} is not interested in its neighbors resources
+    and sends requested forks to its neighbors. A process will switch from
+    \textit{thinking, hungry} when it wants to access its resource. Then
+    it tries to collect all forks from its neighbors. When a process in
+    state \textit{hungry} collects all forks from its neighbors it will
+    start accessing its resources.  It changes to state \textit{eating} in
+    which it keeps all forks until it finishes with accessing the
+    resources and changes to thinking again.
     \begin{enumerate}
-	\item The algorithm is initialized by an acyclic precedence graph H and all processes
-	with lower precedence own dirty forks while processes with higher precedence own
-	request tokens. All processes are initially thinking, i.e. they are not interested
-	in their resources. 
-	\item A process which becomes hungry will send all its request token to neighbor 
-	processes and wait until it received all forks. 
-	\item A process which received all forks will change its state to \textit{eating}
-	\item A process which leaves the critical section (stops eating) changes the state 
-	of all its forks to \textit{dirty}. Then for all held request token the respective
-	fork is sent to neighbor processes.	
+      \item The algorithm is initialized by an acyclic precedence
+        graph H and all processes with lower precedence own dirty forks while
+        processes with higher precedence own request tokens. All processes are
+        initially thinking, i.e. they are not interested in their resources.
+      \item A process which becomes hungry will send all its request
+        token to neighbor processes and wait until it received all forks.
+      \item A process which received all forks will change its state
+        to \textit{eating}
+      \item A process which leaves the critical section (stops eating)
+        changes the state of all its forks to \textit{dirty}. Then for all
+        held request token the respective fork is sent to neighbor processes.
     \end{enumerate}
-    The above steps assume the following: 
+    The above steps assume the following:
     \begin{itemize}
-	\item \textit{Receiving a request token for fork f}: If processors state is different
-	than \textit{eating} and $f$ is dirty then $f$ will be sent to the requesting processor.
-	If processors state was also \textit{hungry} then the request token will also be sent back.
-	\item \textit{Receiving a fork f}: The state of $f$ will be set to clean. 
+      \item \textit{Receiving a request token for fork f}: If
+        processors state is different than \textit{eating} and $f$ is dirty
+        then $f$ will be sent to the requesting processor.  If processors
+        state was also \textit{hungry} then the request token will also be
+        sent back.
+      \item \textit{Receiving a fork f}: The state of $f$ will be
+        set to clean.
     \end{itemize}
   \end{minipage}
 \end{lrbox}
 %
 \solution{
-  See \ref{2014-03:doorways} for solution with doorways.\\ 
-  In dining philosophers problem five or more philosophers (processes) dines
-  together at a table. The philosophers has three states: \textit{thinking, hungry} and \textit{eating}.
-  Between each of the two philosophers lies one fork, i.e. the philosophers shares forks between eachother.
-  In order for a philosopher to eat he must aquire both his left and his right fork. The main problem is to
-  guarantee no deadlock, where no one can eat because no one has two forks, and no starvation, where one
-  hungry philosopher never gets to eat.\\
-  To solve this problem, the Chandy and Misra algorithm can be used, as described below:\\\\
+  See \ref{2014-03:doorways} for solution with doorways.
+
+  In dining philosophers problem five or more philosophers (processes)
+  dines together at a table. The philosophers has three states:
+  \textit{thinking, hungry} and \textit{eating}.  Between each of the
+  two philosophers lies one fork, i.e. the philosophers shares forks
+  between eachother.  In order for a philosopher to eat he must aquire
+  both his left and his right fork. The main problem is to guarantee no
+  deadlock, where no one can eat because no one has two forks, and no
+  starvation, where one hungry philosopher never gets to eat.
+
+  To solve this problem, the Chandy and Misra algorithm can be used,
+  as described below:\\
+
   \usebox{\userinput}
   Time complexity:
-  A process at depth $k$ will have to wait for forks from neighbors with lower precedence time $2(d+l)$
-  plus the time from neighbors of depth $k-1$ needs to be able to eat.
+  A process at depth $k$ will have to wait for forks from neighbors
+  with lower precedence time $2(d+l)$ plus the time from neighbors of
+  depth $k-1$ needs to be able to eat.
 
-From the correctness proof it can be concluded that a process at depth k will have
-to wait for forks from neighbours with lower precedence time 2( d + l ) plus the time
-neighbours of depth k 1 needs to be able to eat. This results in following recursion:
-;
-T ( k ) = T ( k ; 1) + 4( d + l )
-4( k + 1)( d + l )
-Although the acyclic graph is initially of depth , the worst case depth is
-transformations of H . Therefore, a process must wait time O ( n ( d + l )) .
-
+  From the correctness proof it can be concluded that a process at depth
+  $k$ will have to wait for forks from neighbors with lower precedence
+  time $2( d + l )$ plus the time neighbors of depth $k 1$ needs to be able
+  to eat. This results in following recursion: ; $T ( k ) = T ( k ; 1) +
+  4( d + l ) 4( k + 1)( d + l )$. Although the acyclic graph is initially
+  of depth , the worst case depth is transformations of $H$ . Therefore, a
+  process must wait time $O ( n ( d + l ))$.
 }
-
 
 \points{12}
 \question{
@@ -636,27 +666,45 @@ transformations of H . Therefore, a process must wait time O ( n ( d + l )) .
 \section{Tenta 2014-03-12}
 \points{10}
 \label{2014-03:linearizability}
-\question[a)]{
+\question[a]{
   Give the definitions of Linearizability and Sequential Consistency.
 }
-\question[b)]{
+\question[b]{
   A correctness property $\rho$ is compositional if, whenever
   each object in the system satisfies $\rho$, the system as a whole
   satisfies $\rho$. Is Sequential Consistency compositional? \\
   If yes explain why, if no give an example.
 }
-\solution{
-a) A replicated shared object service is said to be \highlight{linearzable} if there is some interleaving in the series of operations issued by all clients that satisfies the following criterias:
-\begin{itemize}
-  \item{The interleaving sequence of operations meets the specifications of a (single) correct copy of the objects}
-  \item{\highlight{The order of operations in the interleaving is consistent with the real times at which the operations occured in the actual execution}}
-\end{itemize}
-A replicated shared object service is said to be \highlight{sequentially consistent} is there is some interleaving in the series of operations issued by all clients that satisfies the following criterias:
-\begin{itemize}
-  \item{The interleaving sequence of operations meets the specifications of a (single) correct copy of the objects}
-  \item{\highlight{The order of operations in the interleaving is consistent with the program order at which individual client executed them}}
-\end{itemize}
-b) Sequential consistency is not compositional. If sequential consistency were compositional then the combination of separate sequential concistent implementations of two objects yields a sequential consistent implementation. This doesn't hold in the following example:
+\solution[a]{
+  A replicated shared object service is said to be
+  \highlight{linearizable} if there is some interleaving in the series
+  of operations issued by all clients that satisfies the following
+  criterias:
+  \begin{itemize}
+    \item{The interleaving sequence of operations meets the
+        specifications of a (single) correct copy of the objects}
+    \item{The order of operations in the interleaving is consistent
+        with the \highlight{real times at which the operations occurred
+          in the actual execution}}
+  \end{itemize}
+
+  A replicated shared object service is said to be
+  \highlight{sequentially consistent} if there is some interleaving in
+  the series of operations issued by all clients that satisfies the
+  following criterias:
+  \begin{itemize}
+    \item{The interleaving sequence of operations meets the
+        specifications of a (single) correct copy of the objects}
+  \item{The order of operations in the interleaving is consistent with
+      the \highlight{program order at which individual client executed
+        them}}
+  \end{itemize}
+}
+\solution[b]{
+  Sequential consistency is not compositional. If sequential consistency
+  were compositional then the combination of separate sequential
+  concistent implementations of two objects yields a sequential
+  consistent implementation. This doesn't hold in the following example:
   \begin{center}
     \begin{tabular}{| l | l |}\hline
       Client 1: & Client 2: \\\hline
@@ -666,7 +714,13 @@ b) Sequential consistency is not compositional. If sequential consistency were c
       $setBalance_A(y, 2)$ &\\\hline
     \end{tabular}
   \end{center}
-   When there are two objects the execution is sequentially consistent. But if these two clients executed on just one object, as below the execution is no longer sequentially consistent. In the example below client 1 sets the balance of the object to 1 and Client 2 reads the balance as 0 and therefore the execution is not sequentially consistent. Hence, sequential consistency is not compositional. 
+  When there are two objects the execution is sequentially
+  consistent. But if these two clients executed on just one object, as
+  below, the execution is no longer sequentially consistent. In the
+  example below client 1 sets the balance of the object to 1 and Client
+  2 reads the balance as 0 and therefore the execution is not
+  sequentially consistent. Hence, sequential consistency is not
+  compositional.
   \begin{center}
     \begin{tabular}{| l | l |}\hline
       Client 1: & Client 2: \\\hline
@@ -689,7 +743,7 @@ b) Sequential consistency is not compositional. If sequential consistency were c
 %
 \begin{lrbox}{\userinput}
   \begin{minipage}{0.5\linewidth}
-    \captionsetup{width=0.75\textwidth} 
+    \captionsetup{width=0.75\textwidth}
     \begin{tikzpicture}[node distance=1cm]
       \node[process] (init) [] {Init};
       \node[process] (wait) [below=1cm of init] {Wait}
@@ -698,7 +752,7 @@ b) Sequential consistency is not compositional. If sequential consistency were c
       (init);
       \node[process] (abort) [below left=1.5cm of wait, xshift=0.5cm] {Abort}
       edge [pre]
-      node[] {} 
+      node[] {}
       (wait);
       \node[process] (precommit) [below right=1.5cm of wait, xshift=-0.5cm, align=center,text width=1.3cm] {Pre\-commit}
       edge [pre]
@@ -718,10 +772,10 @@ b) Sequential consistency is not compositional. If sequential consistency were c
     \end{tikzpicture}
     \captionof{figure}{The finite state \mbox{machine} for the coordinator}
   \end{minipage}
-  
+
   \begin{minipage}{0.5\linewidth}
     \centering
-    \captionsetup{width=0.75\textwidth} 
+    \captionsetup{width=0.75\textwidth}
     \begin{tikzpicture}[node distance=1cm]
       \node[process] (init) [] {Init};
       \node[process] (ready) [below=1cm of init] {Ready}
@@ -759,19 +813,19 @@ b) Sequential consistency is not compositional. If sequential consistency were c
   The difference between the two-phase commit protocol (2PC)
   and the three-phase commit protocol (3PC) is that in 3PC all
   participants enter a pre-commitment state before commiting.
-  The 2PC protocol has the limitation that it is a blocking 
-  protocol. For example, if the coordinator crashes while 
+  The 2PC protocol has the limitation that it is a blocking
+  protocol. For example, if the coordinator crashes while
   receiveing replies from the can commit query so that some reply
   are lost, the coordinator restarts and believes that some processes
   has not yet decided and blocks indefinitely waiting for the lost
   replies. Participants can also be stuck in an indefinitely block
   if messages from the coordinator is lost.
-  The 3PC protocol is not a blocking protocol so it does not have 
-  those issues. Also, due to timeouts the processes is not stuck in 
+  The 3PC protocol is not a blocking protocol so it does not have
+  those issues. Also, due to timeouts the processes is not stuck in
   a state indefinitely.
 \usebox{\userinput}
   Coordinator:\\
-  If the coordinator crashes before sending a vote request to the 
+  If the coordinator crashes before sending a vote request to the
   participants the coordinator aborts upon restart. Otherwise the
   coordinator sends a vote request to the participants and move
   on to the waiting phase.\\
@@ -779,27 +833,27 @@ b) Sequential consistency is not compositional. If sequential consistency were c
   voting abort message the coordinator sends out a global abort to
   the participants and aborts. Otherwise, if all vote commit messages
   is received before the timeout, the coordinator sends out a prepare
-  commit message to the participants and move to the precommit phase. 
+  commit message to the participants and move to the precommit phase.
   If the coordinator crashes during the prepare commit messages sending
   the coordinator can just continue with the sending of prepare commit
-  messages after reboot.\\ 
+  messages after reboot.\\
   If the coordinator receives ready commit from all participants a global
   commit message is sent out to the participants and the coordinator
   commits. Otherwise, if there is a failure or timeout the coordinator
   aborts. \\\\
   %
-  Participant:\\ 
-  If a participant crashes after receiving a vote request, the 
+  Participant:\\
+  If a participant crashes after receiving a vote request, the
   participant aborts and replies with vote abort to the coordinator.
-  The participant also votes abort if it cannot commit even though 
+  The participant also votes abort if it cannot commit even though
   no crash has occured. Otherwise it replies with a vote commit message
   and moves to the ready phase. \\
   If in the prepared state, the participant recieves an abort message
   from the coordinator, it fails or it times out waiting for a message
   the participant aborts. If the participant receives a prepare commit
   message it replies with an ACK and moves to the precommit phase. \\
-  If coordinator crashes after the participants has received prepare 
-  commit messages the participants goes forward with the commit. 
+  If coordinator crashes after the participants has received prepare
+  commit messages the participants goes forward with the commit.
 }
 %
 %
@@ -813,66 +867,73 @@ b) Sequential consistency is not compositional. If sequential consistency were c
 \solution{See:~\ref{2012-03:causal}}
 %
 \points{10}
-\question[a)]{
+\question[a]{
   Describe an algorithm for leader election on a ring topology. All
   processes have unique ids and the system is asynchronous. Any process
   can initiate the leader election protocol at any time.
 }
-\question[b)]{
+\question[b]{
 Compute the time complexity and communication complexity of
   your algorithm.
 }
-\question[c)]{
+\question[c]{
   Is it possible to design a symmetric algorithm for leader
   election? If yes, provide such an algorithm, if no provide a proof.
 }
 %
-\solution{
-a) The assumption is that no failure occurs and that the processes are
-  connected in a ring topology. \\
+\solution[a]{
+  The assumption is that no failure occurs and that the processes are
+  connected in a ring topology.
+
   Initially all processes are marked as non-participant and their leader
   variable is set to $\bot$ (unidentified). The initiating process marks
-  itself as participant and sends an election message containing its 
-  own process identifier to its clockwise neighbour. \\
-  When receiving an election message, the process compare its own id with
-  the id in the message. If the id of the process is smaller than the id
-  in the message, the process marks itself as participant and forwards the
-  message to its neighbour. If the process id is greater than the id in the
-  message and the process is marked as non-participant, then the process
-  marks itself as participant, changes the id in the election message to 
-  its own id and forwards the message. However if the process already was 
-  marked participant the process don't do anything. If the identifier in 
-  the message is the same as the process own id the process becomes the 
-  elected leader. The process sets its own id in its leader variable, marks
-  itself as non-participant and then sends out an elected message containing
-  its own id. When a process recieves the elected message it marks itself
-  as non-participating and sets the leader varible to the identifier in 
-  the message. Then it forwards the elected message to its neighbour if its
-  neighbour isn't the elected leader. \\ \\
-  %
-  b) Time complexity: 
-  In worst case the processes are ordered in ascending order and the process
-  with the lowest process id initiates the election. Since the messages only
-  can travel one node at a time the election message must travers through the 
-  ring twice in the worst case. The elected message always traverses through the 
-  ring once and the total nr of messges in the protcol becomes $3n-1$ messages.
-  Hence the time complexity is $O(n)$. \\
-  %
-  Communcation complexity:
-  If all processes starts election at the same time the multiple election messages
-  will be discarded once a participating process with a higher id than the one in
-  the message receives it. A message can be discarded in $1$ up to $N$ steps. 
-  Therefore, the communcation complexity is $O(n^2)$\\\\
-  %
-  c) No it is not possible! Proof by contradiction: \\
-  There exist a symmetric algorithm for a leader election where all processes
-  execute the same steps and where all processes are identical. In order 
-  to agree upon the same leader, the processes must choose a process with a
-  unique identifier, which is a contradiction.
-%
+  itself as participant and sends an election message containing its own
+  process identifier to its clockwise neighbor.
+
+  When receiving an election message, the process compare its own id
+  with the id in the message. If the id of the process is smaller than
+  the id in the message, the process marks itself as participant and
+  forwards the message to its neighbor. If the process id is greater
+  than the id in the message and the process is marked as
+  non-participant, then the process marks itself as participant, changes
+  the id in the election message to its own id and forwards the
+  message. However if the process already was marked participant the
+  process don't do anything. If the identifier in the message is the
+  same as the process own id the process becomes the elected leader. The
+  process sets its own id in its leader variable, marks itself as
+  non-participant and then sends out an elected message containing its
+  own id. When a process receives the elected message it marks itself as
+  non-participating and sets the leader variable to the identifier in the
+  message. Then it forwards the elected message to its neighbor if its
+  neighbor isn't the elected leader.
+}
+\solution[b]{
+  Time complexity:
+  In worst case the processes are ordered in ascending order and the
+  process with the lowest process id initiates the election. Since the
+  messages only can travel one node at a time the election message must
+  traverse through the ring twice in the worst case. The elected message
+  always traverses through the ring once and the total nr of messages in
+  the protocol becomes $3n-1$ messages.  Hence the time complexity is
+  $O(n)$.
+
+  Communication complexity:
+  If all processes starts election at the same time the multiple
+  election messages will be discarded once a participating process with
+  a higher id than the one in the message receives it. A message can be
+  discarded in $1$ up to $N$ steps.  Therefore, the communcation
+  complexity is $O(n^2)$\\
+}
+\solution[c]{
+  No it is not possible! Proof by contradiction:
+
+  There exist a symmetric algorithm for a leader election where all
+  processes execute the same steps and where all processes are
+  identical. In order to agree upon the same leader, the processes must
+  choose a process with a unique identifier, which is a contradiction.
 }
 \points{15}
-\question[a)]{
+\question[a]{
   Eric wants to build a replicated storage system. In his
   system there is only one client. The client performs just one
   storage operation (read or write) at a time, waiting for each
@@ -893,7 +954,7 @@ a) The assumption is that no failure occurs and that the processes are
   properties of the replication system. Is it sequential consistent?
   Is it a linearizable one? Please explain your answer.
 }
-\question[b)]{
+\question[b]{
   Eric decides to change his design and uses now the gossip
   architecture that lazily synchronizes the two servers. The single
   client contacts any server that is available and gets the value that
@@ -905,7 +966,7 @@ a) The assumption is that no failure occurs and that the processes are
   case where there are no failures. Is it sequential consistent? Is it
   a linearizable one? Please explain your answer.
 }
-\question[c)]{
+\question[c]{
   Eric decides to change his design and uses now nine replicas
   and quorums to ensure strong consistency and availability. What are
   the constraints on the sizes of read and write quorums? What is the
@@ -915,54 +976,61 @@ a) The assumption is that no failure occurs and that the processes are
   system. Is it sequential consistent? Is it a linearizable one?
   Please explain why?
 }
-\oklarhet{Unsure about the answer regarding avaiability in a and the
-  whole answer b}
-\solution{
-  a) The all or nothing approach 3PC make use of makes the system rather
+\oklarhet{Unsure about the answer regarding availability in a) [b?
+  //seba] and the whole answer b)}
+\solution[a]{
+  The all or nothing approach 3PC make use of makes the system rather
   inavailable.\\
-  The system is both linerizable and sequentially consistent, because 
+  The system is both linearizable and sequentially consistent, because
   all operations are done one at the time, and both the replicas updates
-  in the same time. 
-  b) The system is not linearizable since the system lazily synchronizes
+  in the same time.
+}
+\solution[b]{
+  The system is not linearizable since the system lazily synchronizes
   the two servers. One of the criterias of linearizable is that the order
-  of operations is the interleaving should be consistent with the real 
-  times at which the operations occured in the actual execution. Because 
-  of the lazily synchronization there are no guarantee that this criteria 
-  will be met. Hence, it is not linearizable. \\
+  of operations is the interleaving should be consistent with the real
+  times at which the operations occurred in the actual execution. Because
+  of the lazily synchronization there are no guarantee that this criteria
+  will be met. Hence, it is not linearizable.
+
   The system is neither sequentially consistent. This because the criteria
-  that the orders of operations in the interleaving should be consistent 
+  that the orders of operations in the interleaving should be consistent
   at the program order in which each client executed them is not met. Even
   though Eric only has one client, he can make updates to both servers
-  and because of the lazily synchronization the criteria is not met. For 
+  and because of the lazily synchronization the criteria is not met. For
   example if the value of x is 0 and Eric set the value to 1 on server A
   and then directly afterwards read the value from server B, then this is
-  still 0.}
+  still 0.
+}
 \points{10}
 \label{2014-03:doorways}
 \question{
   The algorithm by Choy and Singh uses two Doorways. The
-  Asynchronous and the Synchronous Doorway. \\
-  Describe them in pseudo-code and informally. \\
+  Asynchronous and the Synchronous Doorway.
+
+  Describe them in pseudo-code and informally.
+
   If we use the Asynchronous Doorway together with coloring, is this
   algorithm going to give us a solution to the resource allocation
   problem (e.g. is it going to guarantee mutual exclusion and
   no-starvation)? Please provide a proof sketch or a
-  counterexample. \\
+  counterexample.
+
   What is the time complexity of this algorithm?
 }
 
 \section{Tenta 2013-03-16}
 \points{10}
 \label{2013-03:linearizability}
-\question[a)]{
+\question[a]{
   Give the definitions of Linearizability and Sequential Consistency
 }
-\question[b)]{
+\question[b]{
   Give an example pseudocode for a simple program that
   would operate correctly with sequential consistency but incorrectly
   with linearizability. (Briefly explain your answer.)
 }
-\question[c)]{
+\question[c]{
   Describe the advantages and disadvantages of using each
   for an application, paying particular attention to any assumptions
   you must make about the users behaviour. As two example applications
@@ -1029,16 +1097,16 @@ a) The assumption is that no failure occurs and that the processes are
 
 
 \points{10}
-\question[a)]{What are FIFO ordering, causal ordering and total
+\question[a]{What are FIFO ordering, causal ordering and total
   ordering guarantees of replica managers? How are they related to
   each other?}
-\question[b)]{Compare the causal ordering property with the following
+\question[b]{Compare the causal ordering property with the following
 property: ``if a replica manager processes messages $m_1$ and $m_2$,
 and $m_1 \rightarrow m_2$, then the replica manager must process $m_1$
 before $m_2$.''}
 
 \points{10}
-\question[a)]{Eric wants to build a replicated storage system. In his
+\question[a]{Eric wants to build a replicated storage system. In his
   system there is only one client. The client performs just one
   storage operation (read or write) at a time, waiting for each
   operation to complete before starting the next. Eric wants
@@ -1055,7 +1123,7 @@ before $m_2$.''}
   fundamentally not suited to providing availability via
   replication. \\
   Please explain why.}
-\question[b)]{Eric decides to change his design and use nine replicas
+\question[b]{Eric decides to change his design and use nine replicas
   and quorums to ensure strong consistency and availability. What are
   the constraints on the sizes of read and write quorums? What is the
   availability that he can achieve? Give an example of quorum
@@ -1085,10 +1153,10 @@ before $m_2$.''}
   message of kind broadcast. When a process receives message broadcast
   for the first time, it sends to all other adjacent processes
   further broadcast messages.}
-\question[a)]{What are the properties of reliable broadcast.}
-\question[b)]{What is the Time and Message Complexity of the algorithm
+\question[a]{What are the properties of reliable broadcast.}
+\question[b]{What is the Time and Message Complexity of the algorithm
   in fault-free asynchronous execution?}
-\question[c)]{What is the Time and Message Complexity of the algorithm
+\question[c]{What is the Time and Message Complexity of the algorithm
   in an asynchronous execution in the presence of crash faults? (No
   partitions.) \\
   Please provide brief complexity analysis.}
