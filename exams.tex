@@ -1006,18 +1006,16 @@ Compute the time complexity and communication complexity of
   system. Is it sequential consistent? Is it a linearizable one?
   Please explain why?
 }
-
 \oklarhet{Unsure about the answer regarding avaiability in a and the
   whole answer b}
-\solution{
-  a) Since one operation is executed at a time, the 3PC protocol must 
+\solution[a]{Since one operation is executed at a time, the 3PC protocol must 
   finish before the next operation is performed. This makes the system
   rather inavailable, especially if many operations is executed.\\
   The system is both linerizable and sequentially consistent, because 
   all operations are done one at the time, and both the replicas updates
   in the same time.
-  
-  b) The system is not linearizable since the system lazily synchronizes
+}
+\solution[b]{The system is not linearizable since the system lazily synchronizes
   the two servers. One of the criterias of linearizable is that the order
   of operations is the interleaving should be consistent with the real
   times at which the operations occurred in the actual execution. Because
@@ -1032,6 +1030,9 @@ Compute the time complexity and communication complexity of
   example if the value of x is 0 and Eric set the value to 1 on server A
   and then directly afterwards read the value from server B, then this is
   still 0.
+}
+\solution[c]{
+  See: \ref{2013-03:quorum}c)
 }
 \points{10}
 \label{2014-03:doorways}
@@ -1113,8 +1114,7 @@ Compute the time complexity and communication complexity of
       book.)
   \end{itemize}
 }
-\solution{
-  a) A replicated shared object service is said to be
+\solution[a]{A replicated shared object service is said to be
   \highlight{linearizable} if \textit{for any execution} there is
   some interleaving of the series of operations issued by all the
   clients that satisfies the following two criteria:
@@ -1137,8 +1137,9 @@ Compute the time complexity and communication complexity of
       with the \highlight{program order in which each individual
         client executed them.}
   \end{itemize}
-
-  b) \begin{center}
+}
+\solution[b]{
+  \begin{center}
     Example execution for a service which is sequentially consistent
     but not linearizable.
 
@@ -1159,9 +1160,10 @@ Compute the time complexity and communication complexity of
   order that is consistent with the order seen at the individual
   processes. When this order must also preserve the global (external)
   ordering of non-overlapping operations, this consistency guarantee is
-  called linearizability.\\ \\
-  %
-  c) Not yet answered
+  called linearizability.
+}
+\solution[c]{
+  Not yet answered
 }
 
 
@@ -1174,19 +1176,21 @@ property: ``if a replica manager processes messages $m_1$ and $m_2$,
 and $m_1 \rightarrow m_2$, then the replica manager must process $m_1$
 before $m_2$.''}
 \oklarhet{Unsure about the answer given in b)}
-\solution{
-  a) \begin{description}
+\solution[a]{
+     \begin{description}
         \item[FIFO ordering] if a FE issues r then r', then any correct RM handles r before r'
         \item[Causal ordering] if r $\rightarrow$ r', then any correct RM handles r before r'
         \item[Total ordering] if a correct RM handles r before r', then any correct RM handles r before r'
      \end{description}
-  b) The causal property states that if an operation r $\rightarrow$ r' then any 
+}
+\solution[b]{The causal property states that if an operation r $\rightarrow$ r' then any 
   correct replica manager handles r before r'. Since $m1 \rightarrow m2$ and the 
   replica manager handles both $m1$ and $m2$ then the replica manager must process
   $m1$ before $m2$ if it is a correct process.
 }
 
 \points{10}
+\label{2013-03:quorum}
 \question[a]{Eric wants to build a replicated storage system. In his
   system there is only one client. The client performs just one
   storage operation (read or write) at a time, waiting for each
@@ -1313,14 +1317,14 @@ before $m_2$.''}
   \end{minipage}
 \end{lrbox}
 %
-\solution{
-  a) Since one operation is executed at a time, the 2PC protocol must 
+\solution[a]{
+  Since one operation is executed at a time, the 2PC protocol must 
   finish before the next operation is performed. This makes the system
   rather inavailable, especially if many operations is executed. Also, 
   the fact that 2PC is a blocking protocol makes the protocol not suited 
-  for availability.\\ \\
-  %
-  b) Write quorums must be greater than half the total number of 
+  for availability.
+}
+\solution[b]{Write quorums must be greater than half the total number of 
   replicas, i.e. $W > \frac{9}{2} \implies W > 4 \implies W \geq 5$\\
   Read and write quorums must be greater than the total number of 
   replicas, i.e. $R + W > 9 \implies R > 9 - W \implies R > 4 \implies R \geq 5$\\ \\
