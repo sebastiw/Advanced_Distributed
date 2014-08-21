@@ -13,7 +13,7 @@
 \newcommand{\coursename}{Distributed Systems II (Advanced)}
 \newcommand{\authorname}{Sebastian Weddmark Olsson, Erica Löfström}
 \newcommand{\authormail}{sebastiw@student.chalmers.se, lofstrom.erica@gmail.com}
-\newcommand{\doctitle}{Tentalösningar}
+\newcommand{\doctitle}{Exam solutions}
 \newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
 \newcommand{\oklarhet}[1]{%
   \noindent\fbox{\parbox[b][4em][t]{\textwidth}{\color{red}#1} }%
@@ -74,8 +74,12 @@ Av \authorname \\
 \footnotesize \today\\[0.4cm]
 \end{center}
 {\footnotesize
-Please feel free to spread the document to anyone that wants it, and please improve the solutions if you can. All of the document, as well as the \LaTeX{} code, is public domain.
-Note! These solutions are not from the department giving the course, and they have not been checked for errors. The answers might not be explicit enough to give full points.\\
+Please feel free to spread the document to anyone that wants it, and
+please improve the solutions if you can. All of the document, as well
+as the \LaTeX{} code, is public domain.
+Note! These solutions are not from the department giving the course,
+and they have not been checked for errors. The answers might not be
+explicit enough to give full points.\\
 }
 \horrule{0.5pt} % Thin top horizontal rule
 \normalsize % Revert to normal sized font
@@ -87,7 +91,8 @@ Note! These solutions are not from the department giving the course, and they ha
 \points{10}
 \question{
   Give an example of an execution that is sequential consistent but
-  not linearizable. \\
+  not linearizable.
+
   Show that every linearizable history is sequential consistent.
 }
 \seealso{\ref{2014-03:linearizability}, \ref{2013-08:linearizability}, \ref{2013-03:linearizability}}
@@ -102,7 +107,8 @@ Note! These solutions are not from the department giving the course, and they ha
 \oklarhet{Bad formulation of the question?}
 \solution{
   An replica manager (RM) can be a state machine, which has the
-  following properties:\\
+  following properties:
+
   State Machine
   \begin{itemize}
     \item Applies operations atomically.
@@ -113,7 +119,8 @@ Note! These solutions are not from the department giving the course, and they ha
     \item Its operations must not be affected by clock readings etc.
   \end{itemize}
 
-  ISIS algorithm for total ordering broadcast:\\
+  ISIS algorithm for total ordering broadcast:
+
   Each process $p$ keeps $A^q$, the largest agreed sequence number it
   has observed so far, and $P^q$, its own largest proposed sequence
   number.
@@ -164,12 +171,15 @@ Note! These solutions are not from the department giving the course, and they ha
 \points{5}
 \question{
   Is it possible to implement a total order broadcast
-  deterministically in asynchronous systems with message loses? \\
+  deterministically in asynchronous systems with message loses?
+
   Provide an algorithm or an impossibility proof.
 }
 \solution{
-  No, it is not possible. Proof equivalent to the consensus problem.\\
-  Consensus problem:\\
+  No, it is not possible. Proof equivalent to the consensus problem.
+
+  Consensus problem:
+
   To reach consensus every process $p_i$ begins in the undecided
   state and proposes a single value $v_i$, drawn from a set $D$ ($i =
   1, 2, ..., N$). The processes communicate with one another,
@@ -199,7 +209,8 @@ Note! These solutions are not from the department giving the course, and they ha
 \points{10}
 \label{2012-03:causal}
 \question{
-  What are the properties that a causal broadcast must satisfy? \\
+  What are the properties that a causal broadcast must satisfy?
+
   Compare the causal broadcast property with the following property:
   ``if a process delivers messages $m_1$ and $m_2$, and $m_1 \rightarrow
   m_2$, then the process must deliver $m_1$ before $m_2$.''
@@ -231,7 +242,8 @@ Note! These solutions are not from the department giving the course, and they ha
   algorithm. The initiator sends to all its neighbors a message of kind
   broadcast. When a process receives message broadcast for the first
   time, it sends to all other adjacent processes further broadcast
-  messages. \\
+  messages.
+
   What is the Time and Message Complexity of the algorithm? Please
   provide a complexity analysis.
 }
@@ -280,9 +292,12 @@ Note! These solutions are not from the department giving the course, and they ha
 \points{10}
 \question{
   The algorithm by Choy and Singh uses two Doorways. The Asynchronous
-  and the Synchronous Doorway. \\ Describe them in pseudo-code and
-  informally. \\ Use both Doorways to construct a solution to the
-  Dinning Philosophers problem for a system of 3 philosophers.
+  and the Synchronous Doorway.
+
+  Describe them in pseudo-code and informally.
+
+  Use both Doorways to construct a solution to the Dinning
+  Philosophers problem for a system of 3 philosophers.
 }
 \solution{
   Let $N_p$ denote the set of neighbors of process $p$ and $L_{pq}$
@@ -312,7 +327,8 @@ Note! These solutions are not from the department giving the course, and they ha
   cooperate to block a third process. It is not fair.\\[0.1cm]
 
   To solve the Dinning philosophers problem, a double doorway is
-  needed.\\
+  needed.
+
   The entry code consists out of the synchronous doorway entry code
   embedded in an asynchronous doorway entry and exit code. Processes
   that wish to enter the double doorway cannot forever be hindered from
@@ -481,18 +497,22 @@ Note! These solutions are not from the department giving the course, and they ha
 
 \points{8}
 \question{
-  A three-phase commit protocol has the following parts \\
-  \textbf{Phase 1:} is the same as the two phase commit.\\
+  A three-phase commit protocol has the following parts
+
+  \textbf{Phase 1:} is the same as the two phase commit.
+
   \textbf{Phase 2:} the coordinator collects the votes and makes a
   decision; if it is No, it aborts and informs participants hat voted
   Yes, if the decision is Yes, it sends a precommit request to all
   participants. Participants that voted Yes wait for a precommit or
   doAbort request. They acknowledge precommit requests and carry out
-  doAbort requests. \\
+  doAbort requests.
+
   \textbf{Phase 3:} the coordinator collects the acknowledgements When
   all are received, it commits and sends a do commit to the
   participants. Participants wait for a doCommit request. When it
-  arrives they Commit. \\
+  arrives they Commit.
+
   Explain how this protocol avoids delay to participants during their
   ``uncertain'' period due to the failure of the coordinator or other
   participants. Assume that communication does not fail.
@@ -551,7 +571,8 @@ Note! These solutions are not from the department giving the course, and they ha
   process $Q$ exists in G(V,E).
 
 
-  Broadcasting with ACK = Echo algorithm\\
+  Broadcasting with ACK = Echo algorithm
+
   Creates a spanning tree.
 
   \usebox{\userinput}
@@ -626,11 +647,11 @@ Note! These solutions are not from the department giving the course, and they ha
 \solution{
   See \ref{2014-03:doorways} for solution with doorways.
 
-  In dining philosophers problem five or more philosophers (processes)
+  In dinning philosophers problem five or more philosophers (processes)
   dines together at a table. The philosophers has three states:
   \textit{thinking, hungry} and \textit{eating}.  Between each of the
   two philosophers lies one fork, i.e. the philosophers shares forks
-  between eachother.  In order for a philosopher to eat he must aquire
+  between each other.  In order for a philosopher to eat he must acquire
   both his left and his right fork. The main problem is to guarantee no
   deadlock, where no one can eat because no one has two forks, and no
   starvation, where one hungry philosopher never gets to eat.
@@ -823,12 +844,14 @@ Note! These solutions are not from the department giving the course, and they ha
   The 3PC protocol is not a blocking protocol so it does not have
   those issues. Also, due to timeouts the processes is not stuck in
   a state indefinitely.
-\usebox{\userinput}
-  Coordinator:\\
+  \usebox{\userinput}
+  Coordinator:
+
   If the coordinator crashes before sending a vote request to the
   participants the coordinator aborts upon restart. Otherwise the
   coordinator sends a vote request to the participants and move
-  on to the waiting phase.\\
+  on to the waiting phase.
+
   If there is a failure, timeout or if the coordinator receives a
   voting abort message the coordinator sends out a global abort to
   the participants and aborts. Otherwise, if all vote commit messages
@@ -836,30 +859,34 @@ Note! These solutions are not from the department giving the course, and they ha
   commit message to the participants and move to the precommit phase.
   If the coordinator crashes during the prepare commit messages sending
   the coordinator can just continue with the sending of prepare commit
-  messages after reboot.\\
+  messages after reboot.
+
   If the coordinator receives ready commit from all participants a global
   commit message is sent out to the participants and the coordinator
   commits. Otherwise, if there is a failure or timeout the coordinator
-  aborts. \\\\
-  %
-  Participant:\\
+  aborts. \\
+
+  Participant:
+
   If a participant crashes after receiving a vote request, the
   participant aborts and replies with vote abort to the coordinator.
   The participant also votes abort if it cannot commit even though
   no crash has occured. Otherwise it replies with a vote commit message
-  and moves to the ready phase. \\
+  and moves to the ready phase.
+
   If in the prepared state, the participant recieves an abort message
   from the coordinator, it fails or it times out waiting for a message
   the participant aborts. If the participant receives a prepare commit
-  message it replies with an ACK and moves to the precommit phase. \\
+  message it replies with an ACK and moves to the precommit phase.
+
   If coordinator crashes after the participants has received prepare
   commit messages the participants goes forward with the commit.
 }
-%
-%
+
 \points{5}
 \question{
-  What are the properties that a causal broadcast must satisfy? \\
+  What are the properties that a causal broadcast must satisfy?
+
   Compare the causal broadcast property with the following property:
   ``if a process delivers messages $m_1$ and $m_2$, and $m_1 \rightarrow
   m_2$, then the process must deliver $m_1$ before $m_2$.''
@@ -913,16 +940,16 @@ Compute the time complexity and communication complexity of
   process with the lowest process id initiates the election. Since the
   messages only can travel one node at a time the election message must
   traverse through the ring twice in the worst case. The elected message
-  always traverses through the ring once and the total nr of messages in
-  the protocol becomes $3n-1$ messages.  Hence the time complexity is
-  $O(n)$.
+  always traverses through the ring once and the total number of
+  messages in the protocol becomes $3n-1$ messages.  Hence the time
+  complexity is $O(n)$.
 
   Communication complexity:
   If all processes starts election at the same time the multiple
   election messages will be discarded once a participating process with
   a higher id than the one in the message receives it. A message can be
-  discarded in $1$ up to $N$ steps.  Therefore, the communcation
-  complexity is $O(n^2)$\\
+  discarded in $1$ up to $N$ steps.  Therefore, the communication
+  complexity is $O(n^2)$
 }
 \solution[c]{
   No it is not possible! Proof by contradiction:
@@ -949,7 +976,8 @@ Compute the time complexity and communication complexity of
   explaineed in the lectures. Eric thinks about this design for a
   while, and eventually realizes that three-phase commit is
   fundamentally not suited to providing availability via
-  replication. \\
+  replication.
+
   Please explain why. Eric wants to formalize the consistency
   properties of the replication system. Is it sequential consistent?
   Is it a linearizable one? Please explain your answer.
@@ -960,7 +988,8 @@ Compute the time complexity and communication complexity of
   client contacts any server that is available and gets the value that
   this server has, updates are also performed on the first available
   server first and then lazily propagated on the next server. Each
-  client request uses a unique id.\\
+  client request uses a unique id.
+
   What is the availability that he can achieve? Eric wants to
   formalize the consistency properties of the replication system in
   case where there are no failures. Is it sequential consistent? Is it
@@ -980,7 +1009,8 @@ Compute the time complexity and communication complexity of
   //seba] and the whole answer b)}
 \solution[a]{
   The all or nothing approach 3PC make use of makes the system rather
-  inavailable.\\
+  inavailable.
+
   The system is both linearizable and sequentially consistent, because
   all operations are done one at the time, and both the replicas updates
   in the same time.
@@ -1074,7 +1104,8 @@ Compute the time complexity and communication complexity of
 
   \begin{center}
     Example execution for a service which is sequentially consistent
-    but not linearizable.\\
+    but not linearizable.
+
     \begin{tabular}{| l | l |}\hline
       Client 1: & Client 2: \\\hline
       $setBalance_B(x, 1)$ &\\
@@ -1121,53 +1152,72 @@ before $m_2$.''}
   explaineed in the lectures. Eric thinks about this design for a
   while, and eventually realizes that two-phase commit is
   fundamentally not suited to providing availability via
-  replication. \\
+  replication.
+
   Please explain why.}
-\question[b]{Eric decides to change his design and use nine replicas
+\question[b]{
+  Eric decides to change his design and use nine replicas
   and quorums to ensure strong consistency and availability. What are
   the constraints on the sizes of read and write quorums? What is the
   availability that he can achieve? Give an example of quorum
-  processing involving a write, two reads, then a write.}
-
+  processing involving a write, two reads, then a write.
+}
 
 \points{10}
-\question{A distributed conference application provides a shared
+\question{
+  A distributed conference application provides a shared
   whiteboard. Each member of the conference has a replica of the
   whiteboard that is managed by a specific member of a closed process
-  group. \\
+  group.
+
   Describe an approach that uses the algorithm by Choy and Singh to
   achieve mutually exclusive access to the whiteboard, prior to
-  propagation of the updates to the whole group. \\
+  propagation of the updates to the whole group.
+
   If the number of members of the group is $n$, what is the time
-  complexity of the scheme, provide a brief proof?}
+  complexity of the scheme, provide a brief proof?
+}
 
 \points{5}
-\question{Describe an algorithm that solves consensus in a synchronous
+\question{
+  Describe an algorithm that solves consensus in a synchronous
   system where up to $f$ of the $n$ processes exhibit crash failures,
-  assume the existence of a reliable multicast protocol. \\
-  What is the time complexity of the algorithm.}
+  assume the existence of a reliable multicast protocol.
+
+  What is the time complexity of the algorithm.
+}
 
 \points{10}
-\question{The flooding algorithm is a straight forward reliable
+\question{
+  The flooding algorithm is a straight forward reliable
   broadcast algorithm. The initiator sends to all its neigbors a
   message of kind broadcast. When a process receives message broadcast
   for the first time, it sends to all other adjacent processes
-  further broadcast messages.}
-\question[a]{What are the properties of reliable broadcast.}
-\question[b]{What is the Time and Message Complexity of the algorithm
-  in fault-free asynchronous execution?}
-\question[c]{What is the Time and Message Complexity of the algorithm
+  further broadcast messages.
+}
+\question[a]{
+  What are the properties of reliable broadcast.
+}
+\question[b]{
+  What is the Time and Message Complexity of the algorithm
+  in fault-free asynchronous execution?
+}
+\question[c]{
+  What is the Time and Message Complexity of the algorithm
   in an asynchronous execution in the presence of crash faults? (No
-  partitions.) \\
-  Please provide brief complexity analysis.}
+  partitions.)
+
+  Please provide brief complexity analysis.
+}
 
 \points{5}
-\question{Consider it as given that there is no Byzantine agreement
+\question{
+  Consider it as given that there is no Byzantine agreement
   protocol for a system with 3 processes, from which 1 of them
   faulty. Using this proof prove that there is no Byzantine agreement
   protocol for a system with $n \geq 3$ processes, from which $f$ are
-  faulty if $n \leq 3f$.}
-
+  faulty if $n \leq 3f$.
+}
 
 \section{2013-08-23}
 \points{10}
