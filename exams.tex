@@ -849,11 +849,7 @@ a) The assumption is that no failure occurs and that the processes are
   as non-participating and sets the leader varible to the identifier in 
   the message. Then it forwards the elected message to its neighbour if its
   neighbour isn't the elected leader. \\ \\
-  
-  It's immediate from the correctness proof that the protocols terminates after exactly N+1 rounds.
-
-To count message traffic, observe that each process sends at most 1 message per round, for a total of O(N2) messages. This is a tight bound since if the ids are in decreasing order N N-1 N-2 ... 1, then no messages get eaten until they hit N. 
-  
+  %
   b) Time complexity: 
   In worst case the processes are ordered in ascending order and the process
   with the lowest process id initiates the election. Since the messages only
@@ -866,9 +862,15 @@ To count message traffic, observe that each process sends at most 1 message per 
   If all processes starts election at the same time the multiple election messages
   will be discarded once a participating process with a higher id than the one in
   the message receives it. A message can be discarded in $1$ up to $N$ steps. 
-  Therefore, the communcation complexity is $O(n^2)$
-}
+  Therefore, the communcation complexity is $O(n^2)$\\\\
+  %
+  c) No it is not possible! Proof by contradiction: \\
+  There exist a symmetric algorithm for a leader election where all processes
+  execute the same steps and where all processes are identical. In order 
+  to agree upon the same leader, the processes must choose a process with a
+  unique identifier, which is a contradiction.
 %
+}
 \points{15}
 \question[a)]{
   Eric wants to build a replicated storage system. In his
@@ -913,7 +915,28 @@ To count message traffic, observe that each process sends at most 1 message per 
   system. Is it sequential consistent? Is it a linearizable one?
   Please explain why?
 }
-
+\oklarhet{Unsure about the answer regarding avaiability in a and the
+  whole answer b}
+\solution{
+  a) The all or nothing approach 3PC make use of makes the system rather
+  inavailable.\\
+  The system is both linerizable and sequentially consistent, because 
+  all operations are done one at the time, and both the replicas updates
+  in the same time. 
+  b) The system is not linearizable since the system lazily synchronizes
+  the two servers. One of the criterias of linearizable is that the order
+  of operations is the interleaving should be consistent with the real 
+  times at which the operations occured in the actual execution. Because 
+  of the lazily synchronization there are no guarantee that this criteria 
+  will be met. Hence, it is not linearizable. \\
+  The system is neither sequentially consistent. This because the criteria
+  that the orders of operations in the interleaving should be consistent 
+  at the program order in which each client executed them is not met. Even
+  though Eric only has one client, he can make updates to both servers
+  and because of the lazily synchronization the criteria is not met. For 
+  example if the value of x is 0 and Eric set the value to 1 on server A
+  and then directly afterwards read the value from server B, then this is
+  still 0.}
 \points{10}
 \label{2014-03:doorways}
 \question{
