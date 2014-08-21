@@ -5,8 +5,8 @@
 \usepackage{hyperref}
 \usepackage{tikz}
 \usepackage{listings}
+\usepackage{caption}
 \usetikzlibrary{decorations.pathmorphing,shapes,arrows,positioning,calc,fit,petri}
-
 %% == Commands ================================================
 \newcommand{\coursecode}{TDA297}
 \newcommand{\coursename}{Distributed Systems II (Advanced)}
@@ -480,10 +480,6 @@ Note! These solutions are not from the department giving the course, and they ha
   participants. Assume that communication does not fail.
 }
 \solution{
-  The system is synchronous because it is impossible in an
-  asynchronous system to distinguish between a crashed process and a
-  slow one.
-
   If the state of the cohorts is before precommit and no
   precommit-message is sent from the coordinator, then each cohort
   assumes a failure and abort the commit. If the cohorts have received
@@ -631,10 +627,9 @@ transformations of H . Therefore, a process must wait time O ( n ( d + l )) .
   replication. The parameters of the replication system are described in
   the following table. Calculate: \textit{i)} the read latency,
   \textit{ii)} the write latency, \textit{iii)} the blocking probability
-  of a read and \textit{iv)} the blocking probability of a write.
-}
+  of a read and \textit{iv)} the blocking probability of a write.}
 
-
+\oklarhet{Unsolvable since a part of the question is missing.}
 
 \section{Tenta 2014-03-12}
 \points{10}
@@ -648,6 +643,38 @@ transformations of H . Therefore, a process must wait time O ( n ( d + l )) .
   satisfies $\rho$. Is Sequential Consistency compositional? \\
   If yes explain why, if no give an example.
 }
+\solution{
+a) A replicated shared object service is said to be \highlight{linearzable} if there is some interleaving in the series of operations issued by all clients that satisfies the following criterias:
+\begin{itemize}
+  \item{The interleaving sequence of operations meets the specifications of a (single) correct copy of the objects}
+  \item{\highlight{The order of operations in the interleaving is consistent with the real times at which the operations occured in the actual execution}}
+\end{itemize}
+A replicated shared object service is said to be \highlight{sequentially consistent} is there is some interleaving in the series of operations issued by all clients that satisfies the following criterias:
+\begin{itemize}
+  \item{The interleaving sequence of operations meets the specifications of a (single) correct copy of the objects}
+  \item{\highlight{The order of operations in the interleaving is consistent with the program order at which individual client executed them}}
+\end{itemize}
+b) Sequential consistency is not compositional. If sequential consistency were compositional then the combination of separate sequential concistent implementations of two objects yields a sequential consistent implementation. This doesn't hold in the following example:
+  \begin{center}
+    \begin{tabular}{| l | l |}\hline
+      Client 1: & Client 2: \\\hline
+      $setBalance_B(x, 1)$ &\\
+      & $getBalance_A(y) \rightarrow 0$\\
+      & $getBalance_A(x) \rightarrow 0$\\
+      $setBalance_A(y, 2)$ &\\\hline
+    \end{tabular}
+  \end{center}
+   When there are two objects the execution is sequentially consistent. But if these two clients executed on just one object, as below the execution is no longer sequentially consistent. In the example below client 1 sets the balance of the object to 1 and Client 2 reads the balance as 0 and therefore the execution is not sequentially consistent. Hence, sequential consistency is not compositional. 
+  \begin{center}
+    \begin{tabular}{| l | l |}\hline
+      Client 1: & Client 2: \\\hline
+      $setBalance_A(x, 1)$ &\\
+      & $getBalance_A(y) \rightarrow 0$\\
+      & $getBalance_A(x) \rightarrow 0$\\
+      $setBalance_A(y, 2)$ &\\\hline
+    \end{tabular}
+  \end{center}
+}
 
 \points{10}
 \label{2014-03:phase-commit}
@@ -657,52 +684,124 @@ transformations of H . Therefore, a process must wait time O ( n ( d + l )) .
   commit protocol as a state machine where you also describe the
   behavior of the protocol when time-outs are triggered and processes
   are recovered after crashing.}
+%
+\begin{lrbox}{\userinput}
+  \begin{minipage}{0.5\linewidth}
+    \captionsetup{width=0.75\textwidth} 
+    \begin{tikzpicture}[node distance=1cm]
+      \node[process] (init) [] {Init};
+      \node[process] (wait) [below=1cm of init] {Wait}
+      edge [pre]
+      node [label=15:{commit}, label=-15:{vote-request}] {}
+      (init);
+      \node[process] (abort) [below left=1.5cm of wait, xshift=0.5cm] {Abort}
+      edge [pre]
+      node[] {} 
+      (wait);
+      \node[process] (precommit) [below right=1.5cm of wait, xshift=-0.5cm, align=center,text width=1.3cm] {Pre\-commit}
+      edge [pre]
+      node [] {}
+      (wait);
+      \node[process] (commit) [below=1cm of precommit] {Commit}
+      edge [pre]
+      node [] {}
+      (precommit);
+      %Labels
+      \node [above=0.7cm of abort, xshift=-0.3cm] {vote-abort};
+      \node [above=0.2cm of abort, xshift=-0.3cm] {global-abort};
+      \node [above=0.7cm of precommit, xshift=0.4cm] {vote-commit};
+      \node [above=0.2cm of precommit, xshift=0.4cm] {prepare-commit};
+      \node [above=0.6cm of commit, xshift=-1.5cm] {ready-commit};
+      \node [above=0.1cm of commit, xshift=-1.5cm] {global-commit};
+    \end{tikzpicture}
+    \captionof{figure}{The finite state \mbox{machine} for the coordinator}
+  \end{minipage}
+  
+  \begin{minipage}{0.5\linewidth}
+    \centering
+    \captionsetup{width=0.75\textwidth} 
+    \begin{tikzpicture}[node distance=1cm]
+      \node[process] (init) [] {Init};
+      \node[process] (ready) [below=1cm of init] {Ready}
+      edge [pre]
+      node [label=15:{vote-request}, label=-15:{ready-commit}] {}
+      (init);
+      \node[process] (abort) [below left=1.5cm of ready, xshift=0.5cm] {Abort}
+      edge [pre]
+      node [] {}
+      (ready)
+      edge [pre, bend left=50]
+      node [] {}
+      (init);
+      \node[process] (precommit) [below right=1.5cm of wait, xshift=-0.5cm, align=center, text width=1.3cm] {Pre\-commit}
+      edge [pre]
+      node [] {}
+      (ready);
+      \node[process] (commit) [below=1cm of precommit] {Commit}
+      edge [pre]
+      node [] {}
+      (precommit);
+      %Labels
+      \node [above=2.7cm of abort, xshift=-1cm] {vote-request};
+      \node [above=2.2cm of abort, xshift=-1cm] {vote-abort};
+      \node [above=0.55cm of precommit, xshift=0.4cm] {prepare-commit};
+      \node [above=0.05cm of precommit, xshift=0.4cm] {ready-commit};
+      \node [above=0.4cm of commit, xshift=1.3cm] {global-commit};
+      \node [above=0cm of commit, xshift=1.3cm] {ACK};
+    \end{tikzpicture}
+    \captionof{figure}{The finite state \mbox{machine} for a participant}
+  \end{minipage}
+\end{lrbox}
+%
 \solution{
-  \begin{tikzpicture}[node distance=1cm]
-    \node[process] (init) [] {Init};
-    \node[process] (wait) [below=of init] {Wait}
-    edge [pre]
-    node [label=15:{commit}, label=-15:{vote-request}] {}
-    (init);
-    \node[process] (abort) [below=of wait] {Abort}
-    edge [pre]
-    node [label=180-15:{vote-abort}, label=180+15:{global-abort}] {}
-    (wait);
-    \node[process] (precommit) [right=of abort] {Precommit}
-    edge [pre]
-    node [label=15:{vote-commit}, label=-15:{prepare-commit}] {}
-    (wait);
-    \node[process] (commit) [below=of precommit] {Commit}
-    edge [pre]
-    node [label=15:{ready-commit}, label=-15:{global-commit}] {}
-    (precommit);
-  \end{tikzpicture}
-
-  \begin{tikzpicture}[node distance=1cm]
-    \node[process] (init) [] {Init};
-    \node[process] (ready) [below=of init] {Ready}
-    edge [pre]
-    node [label=15:{vote-request}, label=-15:{ready-commit}] {}
-    (init);
-    \node[process] (abort) [below=of wait] {Abort}
-    edge [pre]
-    node [label=180-15:{global-abort}, label=180+15:{ACK}] {}
-    (ready)
-    edge [pre, bend left]
-    node [label=15:{vote-request}, label=-15:{vote-abort}] {}
-    (init);
-    \node[process] (precommit) [right=of abort] {Precommit}
-    edge [pre]
-    node [label=15:{prepare-commit}, label=-15:{ready-commit}] {}
-    (ready);
-    \node[process] (commit) [below=of precommit] {Commit}
-    edge [pre]
-    node [label=15:{global-commit}, label=-15:{ACK}] {}
-    (precommit);
-  \end{tikzpicture}
+  The difference between the two-phase commit protocol (2PC)
+  and the three-phase commit protocol (3PC) is that in 3PC all
+  participants enter a pre-commitment state before commiting.
+  The 2PC protocol has the limitation that it is a blocking 
+  protocol. For example, if the coordinator crashes while 
+  receiveing replies from the can commit query so that some reply
+  are lost, the coordinator restarts and believes that some processes
+  has not yet decided and blocks indefinitely waiting for the lost
+  replies. Participants can also be stuck in an indefinitely block
+  if messages from the coordinator is lost.
+  The 3PC protocol is not a blocking protocol so it does not have 
+  those issues. Also, due to timeouts the processes is not stuck in 
+  a state indefinitely.
+\usebox{\userinput}
 }
-
-
+  Coordinator:\\
+  If the coordinator crashes before sending a vote request to the 
+  participants the coordinator aborts upon restart. Otherwise the
+  coordinator sends a vote request to the participants and move
+  on to the waiting phase.\\
+  If there is a failure, timeout or if the coordinator receives a
+  voting abort message the coordinator sends out a global abort to
+  the participants and aborts. Otherwise, if all vote commit messages
+  is received before the timeout, the coordinator sends out a prepare
+  commit message to the participants and move to the precommit phase. 
+  If the coordinator crashes during the prepare commit messages sending
+  the coordinator can just continue with the sending of prepare commit
+  messages after reboot.\\ 
+  If the coordinator receives ready commit from all participants a global
+  commit message is sent out to the participants and the coordinator
+  commits. Otherwise, if there is a failure or timeout the coordinator
+  aborts. \\\\
+  %
+  Participant:\\ 
+  If a participant crashes after receiving a vote request, the 
+  participant aborts and replies with vote abort to the coordinator.
+  The participant also votes abort if it cannot commit even though 
+  no crash has occured. Otherwise it replies with a vote commit message
+  and moves to the ready phase. \\
+  If in the prepared state, the participant recieves an abort message
+  from the coordinator, it fails or it times out waiting for a message
+  the participant aborts. If the participant receives a prepare commit
+  message it replies with an ACK and moves to the precommit phase. \\
+  If coordinator crashes after the participants has received prepare 
+  commit messages the participants goes forward with the commit. 
+  
+%
+%
 \points{5}
 \question{
   What are the properties that a causal broadcast must satisfy? \\
