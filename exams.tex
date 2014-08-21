@@ -7,6 +7,7 @@
 \usepackage{listings}
 \usepackage{caption}
 \usetikzlibrary{decorations.pathmorphing,shapes,arrows,positioning,calc,fit,petri}
+\setlength\parindent{0pt}
 %% == Commands ================================================
 \newcommand{\coursecode}{TDA297}
 \newcommand{\coursename}{Distributed Systems II (Advanced)}
@@ -189,6 +190,7 @@ Note! These solutions are not from the department giving the course, and they ha
 }
 
 \points{10}
+\label{2012-03:causal}
 \question{
   What are the properties that a causal broadcast must satisfy? \\
   Compare the causal broadcast property with the following property:
@@ -768,7 +770,6 @@ b) Sequential consistency is not compositional. If sequential consistency were c
   those issues. Also, due to timeouts the processes is not stuck in 
   a state indefinitely.
 \usebox{\userinput}
-}
   Coordinator:\\
   If the coordinator crashes before sending a vote request to the 
   participants the coordinator aborts upon restart. Otherwise the
@@ -799,7 +800,7 @@ b) Sequential consistency is not compositional. If sequential consistency were c
   message it replies with an ACK and moves to the precommit phase. \\
   If coordinator crashes after the participants has received prepare 
   commit messages the participants goes forward with the commit. 
-  
+}
 %
 %
 \points{5}
@@ -809,7 +810,8 @@ b) Sequential consistency is not compositional. If sequential consistency were c
   ``if a process delivers messages $m_1$ and $m_2$, and $m_1 \rightarrow
   m_2$, then the process must deliver $m_1$ before $m_2$.''
 }
-
+\solution{See:~\ref{2012-03:causal}}
+%
 \points{10}
 \question[a)]{
   Describe an algorithm for leader election on a ring topology. All
@@ -824,7 +826,49 @@ Compute the time complexity and communication complexity of
   Is it possible to design a symmetric algorithm for leader
   election? If yes, provide such an algorithm, if no provide a proof.
 }
+%
+\solution{
+a) The assumption is that no failure occurs and that the processes are
+  connected in a ring topology. \\
+  Initially all processes are marked as non-participant and their leader
+  variable is set to $\bot$ (unidentified). The initiating process marks
+  itself as participant and sends an election message containing its 
+  own process identifier to its clockwise neighbour. \\
+  When receiving an election message, the process compare its own id with
+  the id in the message. If the id of the process is smaller than the id
+  in the message, the process marks itself as participant and forwards the
+  message to its neighbour. If the process id is greater than the id in the
+  message and the process is marked as non-participant, then the process
+  marks itself as participant, changes the id in the election message to 
+  its own id and forwards the message. However if the process already was 
+  marked participant the process don't do anything. If the identifier in 
+  the message is the same as the process own id the process becomes the 
+  elected leader. The process sets its own id in its leader variable, marks
+  itself as non-participant and then sends out an elected message containing
+  its own id. When a process recieves the elected message it marks itself
+  as non-participating and sets the leader varible to the identifier in 
+  the message. Then it forwards the elected message to its neighbour if its
+  neighbour isn't the elected leader. \\ \\
+  
+  It's immediate from the correctness proof that the protocols terminates after exactly N+1 rounds.
 
+To count message traffic, observe that each process sends at most 1 message per round, for a total of O(N2) messages. This is a tight bound since if the ids are in decreasing order N N-1 N-2 ... 1, then no messages get eaten until they hit N. 
+  
+  b) Time complexity: 
+  In worst case the processes are ordered in ascending order and the process
+  with the lowest process id initiates the election. Since the messages only
+  can travel one node at a time the election message must travers through the 
+  ring twice in the worst case. The elected message always traverses through the 
+  ring once and the total nr of messges in the protcol becomes $3n-1$ messages.
+  Hence the time complexity is $O(n)$. \\
+  %
+  Communcation complexity:
+  If all processes starts election at the same time the multiple election messages
+  will be discarded once a participating process with a higher id than the one in
+  the message receives it. A message can be discarded in $1$ up to $N$ steps. 
+  Therefore, the communcation complexity is $O(n^2)$
+}
+%
 \points{15}
 \question[a)]{
   Eric wants to build a replicated storage system. In his
