@@ -5,6 +5,7 @@
 \usepackage{tikz}
 \usepackage{listings}
 \usepackage{caption}
+\usepackage{amsmath}
 \usetikzlibrary{decorations.pathmorphing,shapes,arrows,positioning,calc,fit,petri}
 \usepackage{ifthen}
 
@@ -1005,18 +1006,16 @@ Compute the time complexity and communication complexity of
   system. Is it sequential consistent? Is it a linearizable one?
   Please explain why?
 }
-\oklarhet{Unsure about the answer regarding availability in a) [b?
-  //seba] and the whole answer b)}
-\solution[a]{
-  The all or nothing approach 3PC make use of makes the system rather
-  inavailable.
-
-  The system is both linearizable and sequentially consistent, because
+\oklarhet{Unsure about the answer regarding avaiability in a and the
+  whole answer b}
+\solution[a]{Since one operation is executed at a time, the 3PC protocol must 
+  finish before the next operation is performed. This makes the system
+  rather inavailable, especially if many operations is executed.\\
+  The system is both linerizable and sequentially consistent, because 
   all operations are done one at the time, and both the replicas updates
   in the same time.
 }
-\solution[b]{
-  The system is not linearizable since the system lazily synchronizes
+\solution[b]{The system is not linearizable since the system lazily synchronizes
   the two servers. One of the criterias of linearizable is that the order
   of operations is the interleaving should be consistent with the real
   times at which the operations occurred in the actual execution. Because
@@ -1031,6 +1030,9 @@ Compute the time complexity and communication complexity of
   example if the value of x is 0 and Eric set the value to 1 on server A
   and then directly afterwards read the value from server B, then this is
   still 0.
+}
+\solution[c]{
+  See: \ref{2013-03:quorum}b)
 }
 \points{10}
 \label{2014-03:doorways}
@@ -1048,7 +1050,42 @@ Compute the time complexity and communication complexity of
 
   What is the time complexity of this algorithm?
 }
-
+\oklarhet{Unsure of the complexity analysis}
+%
+\solution{
+  Let $N_p$ denote the set of neighbours of process $p$ and $L_{pq}$ the
+  actual state of $q$ known by $p$. If neighbour processes $q_0,...,q_t$
+  $\in N_p$ have entered the doorway, $p$ must wait until $q_0,...,q_t$ 
+  have existed the doorway. \\ \\
+  %
+  Asynchronous Doorway entry code:\\
+  $\forall q \in N_q$ : \textbf{wait until} $L_{pq} \neq m_1$;\\
+  \textbf{broadcast} message $m_1$ to all neighbours;\\ \\
+  %
+  Asynchronous Doorway exit code: \\
+  \textbf{broadcast} a message different from $m_1$ to neighbours;\\ \\
+  %
+  Synchronous Doorway entry code:\\
+  \textbf{wait until} ($\forall q \in N_q$ : $L_{pq} \neq m_2$);\\
+  \textbf{broadcast} message $m_2$ to all neighbours;\\ \\
+  %
+  Synchronous Doorway exit code:\\
+  \textbf{broadcast} a message different from $m_2$ to neighbours;\\ \\
+  %
+  The attempt of using an asynchronous doorway together with a $\delta +1$-colouring
+  algorithm for solving the resource allocation problem would lead to a solution where
+  processes might have to wait time which is exponentially in $\delta$. The reason 
+  is given by the possibility that a process $p$ might successively be blocked by 
+  lower coloured neighbour processes after $p$ entered the doorway. Recurisvely a lower
+  coloured neightbour $q$ of $p$, can be blocked successively by $q$'s lower coloured
+  neighbours. Let $T(c)$ denote the maximum time which a process of color $c$ will have
+  to wait. Assume every process with colour > 0 has exact $\delta - 1$ neighbour processes
+  with lower colour. Further let us assume an execution where each process will get successively
+  blocked by its lower coloured processes. Then a process with colour c will need time $T(c) =$
+  $(\delta-1)T(c-1)=(\delta-1)^c$ and therefore $T(\delta)=(\delta-1)^\delta$ until a process
+  will be able to access its critical section.
+}
+%
 \section{Tenta 2013-03-16}
 \points{10}
 \label{2013-03:linearizability}
@@ -1077,8 +1114,7 @@ Compute the time complexity and communication complexity of
       book.)
   \end{itemize}
 }
-\solution{
-  A replicated shared object service is said to be
+\solution[a]{A replicated shared object service is said to be
   \highlight{linearizable} if \textit{for any execution} there is
   some interleaving of the series of operations issued by all the
   clients that satisfies the following two criteria:
@@ -1101,7 +1137,8 @@ Compute the time complexity and communication complexity of
       with the \highlight{program order in which each individual
         client executed them.}
   \end{itemize}
-
+}
+\solution[b]{
   \begin{center}
     Example execution for a service which is sequentially consistent
     but not linearizable.
@@ -1125,6 +1162,9 @@ Compute the time complexity and communication complexity of
   ordering of non-overlapping operations, this consistency guarantee is
   called linearizability.
 }
+\solution[c]{
+  Not yet answered
+}
 
 
 \points{10}
@@ -1135,8 +1175,22 @@ Compute the time complexity and communication complexity of
 property: ``if a replica manager processes messages $m_1$ and $m_2$,
 and $m_1 \rightarrow m_2$, then the replica manager must process $m_1$
 before $m_2$.''}
+\oklarhet{Unsure about the answer given in b)}
+\solution[a]{
+     \begin{description}
+        \item[FIFO ordering] if a FE issues r then r', then any correct RM handles r before r'
+        \item[Causal ordering] if r $\rightarrow$ r', then any correct RM handles r before r'
+        \item[Total ordering] if a correct RM handles r before r', then any correct RM handles r before r'
+     \end{description}
+}
+\solution[b]{The causal property states that if an operation r $\rightarrow$ r' then any 
+  correct replica manager handles r before r'. Since $m1 \rightarrow m2$ and the 
+  replica manager handles both $m1$ and $m2$ then the replica manager must process
+  $m1$ before $m2$ if it is a correct process.
+}
 
 \points{10}
+\label{2013-03:quorum}
 \question[a]{Eric wants to build a replicated storage system. In his
   system there is only one client. The client performs just one
   storage operation (read or write) at a time, waiting for each
@@ -1160,9 +1214,156 @@ before $m_2$.''}
   and quorums to ensure strong consistency and availability. What are
   the constraints on the sizes of read and write quorums? What is the
   availability that he can achieve? Give an example of quorum
-  processing involving a write, two reads, then a write.
-}
+  processing involving a write, two reads, then a write.}
+% 
+\begin{lrbox}{\userinput}
+  \begin{minipage}{0.25\linewidth}
+      \begin{tikzpicture}
+        \draw (0,0) circle (0.2cm);
+        \draw (0,0.6) circle (0.2cm);
+        \draw (0,1.2) circle (0.2cm);
+        
+        \draw (0.6, 0) circle (0.2cm);
+        \draw (0.6, 0.6) circle (0.2cm);
+        \draw (0.6, 1.2) circle (0.2cm);
+        
+        \draw (1.2, 0) circle (0.2cm);
+        \draw (1.2, 0.6) circle (0.2cm);
+        \draw (1.2, 1.2) circle (0.2cm);
 
+        \draw (-0.3,-0.3) -- (-0.3,0.3);    
+        \draw (-0.3,0.3) -- (0.3,0.3);
+        \draw (0.3, 0.3) -- (0.3,0.9);
+        \draw (0.3, 0.9) -- (1.5,0.9); 
+        \draw (1.5, 0.9) -- (1.5, -0.3);
+        \draw (1.5, -0.3) -- (-0.3,-0.3);
+      \end{tikzpicture} 
+    \captionof{figure}{Write 1}
+  \end{minipage}
+  %
+  \begin{minipage}{0.25\linewidth}
+    \centering
+      \begin{tikzpicture}
+        \draw (0,0) circle (0.2cm);
+        \draw (0,0.6) circle (0.2cm);
+        \draw (0,1.2) circle (0.2cm);
+        
+        \draw (0.6, 0) circle (0.2cm);
+        \draw (0.6, 0.6) circle (0.2cm);
+        \draw (0.6, 1.2) circle (0.2cm);
+        
+        \draw (1.2, 0) circle (0.2cm);
+        \draw (1.2, 0.6) circle (0.2cm);
+        \draw (1.2, 1.2) circle (0.2cm);
+
+        \draw (-0.3,-0.3) -- (-0.3,1.5);    
+        \draw (-0.3,1.5) -- (0.9,1.5);
+        \draw (0.9, 1.5) -- (0.9,0.9);
+        \draw (0.9, 0.9) -- (0.3,0.9); 
+        \draw (0.3, 0.9) -- (0.3, -0.3);
+        \draw (0.3, -0.3) -- (-0.3,-0.3);
+      \end{tikzpicture} 
+    \captionof{figure}{Read 1}
+  \end{minipage}
+  %
+    \begin{minipage}{0.25\linewidth}
+    \centering
+      \begin{tikzpicture}
+        \draw (0,0) circle (0.2cm);
+        \draw (0,0.6) circle (0.2cm);
+        \draw (0,1.2) circle (0.2cm);
+        
+        \draw (0.6, 0) circle (0.2cm);
+        \draw (0.6, 0.6) circle (0.2cm);
+        \draw (0.6, 1.2) circle (0.2cm);
+        
+        \draw (1.2, 0) circle (0.2cm);
+        \draw (1.2, 0.6) circle (0.2cm);
+        \draw (1.2, 1.2) circle (0.2cm);
+
+        \draw (-0.3,1.5) -- (1.5,1.5);    
+        \draw (1.5, 1.5) -- (1.5,-0.3);
+        \draw (1.5,-0.3) -- (0.9,-0.3);
+        \draw (0.9,-0.3) -- (0.9,0.9); 
+        \draw (0.9, 0.9) -- (-0.3, 0.9);
+        \draw (-0.3,0.9) -- (-0.3,1.5);
+      \end{tikzpicture} 
+    \captionof{figure}{Read 2}
+  \end{minipage}
+  %
+    \begin{minipage}{0.25\linewidth}
+    \centering
+      \begin{tikzpicture}
+        \draw (0,0) circle (0.2cm);
+        \draw (0,0.6) circle (0.2cm);
+        \draw (0,1.2) circle (0.2cm);
+        
+        \draw (0.6, 0) circle (0.2cm);
+        \draw (0.6, 0.6) circle (0.2cm);
+        \draw (0.6, 1.2) circle (0.2cm);
+        
+        \draw (1.2, 0) circle (0.2cm);
+        \draw (1.2, 0.6) circle (0.2cm);
+        \draw (1.2, 1.2) circle (0.2cm);
+
+        \draw (-0.3,1.5) -- (1.5,1.5);    
+        \draw (1.5 ,1.5) -- (1.5,0.9);
+        \draw (1.5, 0.9) -- (0.9,0.9);
+        \draw (0.9, 0.9) -- (0.9,0.3); 
+        \draw (0.9, 0.3) -- (-0.3, 0.3);
+        \draw (-0.3, 0.3) -- (-0.3,1.5);
+      \end{tikzpicture} 
+    \captionof{figure}{Write 2}
+  \end{minipage}
+\end{lrbox}
+%
+\solution[a]{
+  Since one operation is executed at a time, the 2PC protocol must 
+  finish before the next operation is performed. This makes the system
+  rather inavailable, especially if many operations is executed. Also, 
+  the fact that 2PC is a blocking protocol makes the protocol not suited 
+  for availability.
+}
+\solution[b]{Write quorums must be greater than half the total number of 
+  replicas, i.e. $W > \frac{9}{2} \implies W > 4 \implies W \geq 5$\\
+  Read and write quorums must be greater than the total number of 
+  replicas, i.e. $R + W > 9 \implies R > 9 - W \implies R > 4 \implies R \geq 5$\\ \\
+  %
+  \usebox{\userinput}
+  Because of the constraint on the size of read and write quorums then
+  at least on of the replicas contains updated information after each operation. 
+  This makes the system both linearizable and sequentially consistent.\\\\
+  %
+  \begin{tikzpicture}
+    \draw (0,0) circle (0.2cm);
+    \draw (0,0.6) circle (0.2cm);
+    \draw (0,1.2) circle (0.2cm);
+    
+    \draw (0.6, 0) circle (0.2cm);
+    \draw (0.6, 0.6) circle (0.2cm);
+    \draw (0.6, 1.2) circle (0.2cm);
+    
+    \draw (1.2, 0) circle (0.2cm);
+    \draw (1.2, 0.6) circle (0.2cm);
+    \draw (1.2, 1.2) circle (0.2cm);
+
+    \draw (-0.3,1.5) -- (1.5,1.5);    
+    \draw (1.5 ,1.5) -- (1.5,0.9);
+    \draw (1.5, 0.9) -- (0.9,0.9);
+    \draw (0.9, 0.9) -- (0.9,0.3); 
+    \draw (0.9, 0.3) -- (-0.3, 0.3);
+    \draw (-0.3, 0.3) -- (-0.3,1.5);
+
+    \draw (-0.3,1.5) -- (1.5,1.5);    
+    \draw (1.5, 1.5) -- (1.5,-0.3);
+    \draw (1.5,-0.3) -- (0.9,-0.3);
+    \draw (0.9,-0.3) -- (0.9,0.9); 
+    \draw (0.9, 0.9) -- (-0.3, 0.9);
+    \draw (-0.3,0.9) -- (-0.3,1.5);
+  \end{tikzpicture} 
+}
+%
+%
 \points{10}
 \question{
   A distributed conference application provides a shared
