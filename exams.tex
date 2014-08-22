@@ -26,9 +26,7 @@
 \newcommand{\seealso}[1]{\\\textit{See also:} #1}
 \newcommand{\solution}[2][]{
   \ifthenelse{\equal{#1}{} \or \equal{#1}{a}}{\\[3pt]\textit{Solution: }\\[0.1cm]}{}
-  \parbox[t]{\textwidth}{
-    \ifthenelse{\equal{#1}{}}{}{#1)}
-    \parbox[t]{0.95\textwidth}{#2}}\\
+  \question[#1]{#2}
 }
 \newcommand{\highlight}[1]{{\color{blue}#1}}
 
@@ -48,7 +46,8 @@
   pre/.style     = {<-,shorten <=1pt, semithick},
   post/.style    = {->,shorten >=1pt, semithick},
   process/.style = {draw, circle, node distance=3cm},
-  doorway/.style={draw, rectangle, minimum height=2cm, text width=2cm},
+  doorway/.style = {draw, rectangle, minimum height=2cm, text
+    width=1.2cm},
   group/.style={draw, rectangle, dashed},
   skip loop/.style={to path={-- ++(0,#1) -| (\tikztotarget)}}
 }
@@ -125,9 +124,9 @@ explicit enough to give full points.\\
   has observed so far, and $P^q$, its own largest proposed sequence
   number.
   \begin{enumerate}
-    \item $p$ B-multicasts <$m$,$i$> where $i$ is a unique identifier
+    \item $p$ B-multicasts $<m,i>$ where $i$ is a unique identifier
       for message $m$.
-    \item On receiving <$m$,$i$> for the first time
+    \item On receiving $<m,i>$ for the first time
       Each process $q$ replies to the sender $p$ with a proposal
       for the message's agreed sequence number of $P^q := Max(A^q,
       P^q)+1$. Each process provisionally assigns the proposed
@@ -135,7 +134,7 @@ explicit enough to give full points.\\
       queue. Which is ordered with the smallest sequence number at the front.
     \item $p$ collects all proposed sequence numbers and selects the
       largest one, $a$, as the next agreed sequence number. It then
-      B-multicasts <$i$,$a$>. Each process $q$ sets $A^q := Max(A^q,
+      B-multicasts $<i,a>$. Each process $q$ sets $A^q := Max(A^q,
       a)$, and attaches $a$ to the message (which is identified by
       $i$). If the agrees sequence number differs from the proposed
       sequence number, it reorders the messages in its hold-back
@@ -296,7 +295,7 @@ explicit enough to give full points.\\
 
   Describe them in pseudo-code and informally.
 
-  Use both Doorways to construct a solution to the Dinning
+  Use both Doorways to construct a solution to the Dining
   Philosophers problem for a system of 3 philosophers.
 }
 \solution{
@@ -326,7 +325,7 @@ explicit enough to give full points.\\
   The problem with the synchronous doorway is that two processes can
   cooperate to block a third process. It is not fair.\\[0.1cm]
 
-  To solve the Dinning philosophers problem, a double doorway is
+  To solve the Dining philosophers problem, a double doorway is
   needed.
 
   The entry code consists out of the synchronous doorway entry code
@@ -341,14 +340,14 @@ explicit enough to give full points.\\
 
   %% Master thesis p.50.
   \begin{tikzpicture}
-    \node[doorway] (async entry) [] {Asynchronous entry};
-    \node[doorway] (sync entry)  [right=of async entry] {Synchronous entry}
+    \node[doorway] (async entry) [] {Asynch-ronous entry};
+    \node[doorway] (sync entry)  [right=of async entry] {Synch-ronous entry}
     edge [pre] (async entry);
-    \node[doorway] (async exit)  [right=of sync entry] {Asynchronous exit}
+    \node[doorway] (async exit)  [right=of sync entry] {Asynch-ronous exit}
     edge [pre] (sync entry);
     \node[doorway] (dosome)  [right=of async exit] {Do some}
     edge [pre] (async exit);
-    \node[doorway] (sync exit)  [right=of dosome] {Synchronous exit}
+    \node[doorway] (sync exit)  [right=of dosome] {Synch-ronous exit}
     edge [pre] (dosome)
     edge [->,skip loop=-25mm] (async entry);
 
@@ -456,6 +455,7 @@ explicit enough to give full points.\\
   in a synchronous system, using a reliable multicast and a solution
   to the consensus problem.
 }
+\oklarhet{The answer is missing ``totally ordered''?}
 %
 \begin{lrbox}{\userinput}
   \begin{minipage}{\linewidth}
@@ -593,7 +593,7 @@ explicit enough to give full points.\\
 
 \points{15}
 \question{
-  Give a solution to the dinning philosophers problem. Prove the time
+  Give a solution to the dining philosophers problem. Prove the time
   complexity of the algorithm.
 }\\
 %
@@ -647,7 +647,7 @@ explicit enough to give full points.\\
 \solution{
   See \ref{2014-03:doorways} for solution with doorways.
 
-  In dinning philosophers problem five or more philosophers (processes)
+  In dining philosophers problem five or more philosophers (processes)
   dines together at a table. The philosophers has three states:
   \textit{thinking, hungry} and \textit{eating}.  Between each of the
   two philosophers lies one fork, i.e. the philosophers shares forks
