@@ -1008,10 +1008,10 @@ Compute the time complexity and communication complexity of
 }
 \oklarhet{Unsure about the answer regarding avaiability in a and the
   whole answer b}
-\solution[a]{Since one operation is executed at a time, the 3PC protocol must 
+\solution[a]{Since one operation is executed at a time, the 3PC protocol must
   finish before the next operation is performed. This makes the system
   rather inavailable, especially if many operations is executed.\\
-  The system is both linerizable and sequentially consistent, because 
+  The system is both linerizable and sequentially consistent, because
   all operations are done one at the time, and both the replicas updates
   in the same time.
 }
@@ -1055,7 +1055,7 @@ Compute the time complexity and communication complexity of
 \solution{
   Let $N_p$ denote the set of neighbours of process $p$ and $L_{pq}$ the
   actual state of $q$ known by $p$. If neighbour processes $q_0,...,q_t$
-  $\in N_p$ have entered the doorway, $p$ must wait until $q_0,...,q_t$ 
+  $\in N_p$ have entered the doorway, $p$ must wait until $q_0,...,q_t$
   have existed the doorway. \\ \\
   %
   Asynchronous Doorway entry code:\\
@@ -1074,8 +1074,8 @@ Compute the time complexity and communication complexity of
   %
   The attempt of using an asynchronous doorway together with a $\delta +1$-colouring
   algorithm for solving the resource allocation problem would lead to a solution where
-  processes might have to wait time which is exponentially in $\delta$. The reason 
-  is given by the possibility that a process $p$ might successively be blocked by 
+  processes might have to wait time which is exponentially in $\delta$. The reason
+  is given by the possibility that a process $p$ might successively be blocked by
   lower coloured neighbour processes after $p$ entered the doorway. Recurisvely a lower
   coloured neightbour $q$ of $p$, can be blocked successively by $q$'s lower coloured
   neighbours. Let $T(c)$ denote the maximum time which a process of color $c$ will have
@@ -1183,8 +1183,8 @@ before $m_2$.''}
         \item[Total ordering] if a correct RM handles r before r', then any correct RM handles r before r'
      \end{description}
 }
-\solution[b]{The causal property states that if an operation r $\rightarrow$ r' then any 
-  correct replica manager handles r before r'. Since $m1 \rightarrow m2$ and the 
+\solution[b]{The causal property states that if an operation r $\rightarrow$ r' then any
+  correct replica manager handles r before r'. Since $m1 \rightarrow m2$ and the
   replica manager handles both $m1$ and $m2$ then the replica manager must process
   $m1$ before $m2$ if it is a correct process.
 }
@@ -1215,29 +1215,29 @@ before $m_2$.''}
   the constraints on the sizes of read and write quorums? What is the
   availability that he can achieve? Give an example of quorum
   processing involving a write, two reads, then a write.}
-% 
+%
 \begin{lrbox}{\userinput}
   \begin{minipage}{0.25\linewidth}
       \begin{tikzpicture}
         \draw (0,0) circle (0.2cm);
         \draw (0,0.6) circle (0.2cm);
         \draw (0,1.2) circle (0.2cm);
-        
+
         \draw (0.6, 0) circle (0.2cm);
         \draw (0.6, 0.6) circle (0.2cm);
         \draw (0.6, 1.2) circle (0.2cm);
-        
+
         \draw (1.2, 0) circle (0.2cm);
         \draw (1.2, 0.6) circle (0.2cm);
         \draw (1.2, 1.2) circle (0.2cm);
 
-        \draw (-0.3,-0.3) -- (-0.3,0.3);    
+        \draw (-0.3,-0.3) -- (-0.3,0.3);
         \draw (-0.3,0.3) -- (0.3,0.3);
         \draw (0.3, 0.3) -- (0.3,0.9);
-        \draw (0.3, 0.9) -- (1.5,0.9); 
+        \draw (0.3, 0.9) -- (1.5,0.9);
         \draw (1.5, 0.9) -- (1.5, -0.3);
         \draw (1.5, -0.3) -- (-0.3,-0.3);
-      \end{tikzpicture} 
+      \end{tikzpicture}
     \captionof{figure}{Write 1}
   \end{minipage}
   %
@@ -1247,22 +1247,22 @@ before $m_2$.''}
         \draw (0,0) circle (0.2cm);
         \draw (0,0.6) circle (0.2cm);
         \draw (0,1.2) circle (0.2cm);
-        
+
         \draw (0.6, 0) circle (0.2cm);
         \draw (0.6, 0.6) circle (0.2cm);
         \draw (0.6, 1.2) circle (0.2cm);
-        
+
         \draw (1.2, 0) circle (0.2cm);
         \draw (1.2, 0.6) circle (0.2cm);
         \draw (1.2, 1.2) circle (0.2cm);
 
-        \draw (-0.3,-0.3) -- (-0.3,1.5);    
+        \draw (-0.3,-0.3) -- (-0.3,1.5);
         \draw (-0.3,1.5) -- (0.9,1.5);
         \draw (0.9, 1.5) -- (0.9,0.9);
-        \draw (0.9, 0.9) -- (0.3,0.9); 
+        \draw (0.9, 0.9) -- (0.3,0.9);
         \draw (0.3, 0.9) -- (0.3, -0.3);
         \draw (0.3, -0.3) -- (-0.3,-0.3);
-      \end{tikzpicture} 
+      \end{tikzpicture}
     \captionof{figure}{Read 1}
   \end{minipage}
   %
@@ -1272,22 +1272,22 @@ before $m_2$.''}
         \draw (0,0) circle (0.2cm);
         \draw (0,0.6) circle (0.2cm);
         \draw (0,1.2) circle (0.2cm);
-        
+
         \draw (0.6, 0) circle (0.2cm);
         \draw (0.6, 0.6) circle (0.2cm);
         \draw (0.6, 1.2) circle (0.2cm);
-        
+
         \draw (1.2, 0) circle (0.2cm);
         \draw (1.2, 0.6) circle (0.2cm);
         \draw (1.2, 1.2) circle (0.2cm);
 
-        \draw (-0.3,1.5) -- (1.5,1.5);    
+        \draw (-0.3,1.5) -- (1.5,1.5);
         \draw (1.5, 1.5) -- (1.5,-0.3);
         \draw (1.5,-0.3) -- (0.9,-0.3);
-        \draw (0.9,-0.3) -- (0.9,0.9); 
+        \draw (0.9,-0.3) -- (0.9,0.9);
         \draw (0.9, 0.9) -- (-0.3, 0.9);
         \draw (-0.3,0.9) -- (-0.3,1.5);
-      \end{tikzpicture} 
+      \end{tikzpicture}
     \captionof{figure}{Read 2}
   \end{minipage}
   %
@@ -1297,70 +1297,73 @@ before $m_2$.''}
         \draw (0,0) circle (0.2cm);
         \draw (0,0.6) circle (0.2cm);
         \draw (0,1.2) circle (0.2cm);
-        
+
         \draw (0.6, 0) circle (0.2cm);
         \draw (0.6, 0.6) circle (0.2cm);
         \draw (0.6, 1.2) circle (0.2cm);
-        
+
         \draw (1.2, 0) circle (0.2cm);
         \draw (1.2, 0.6) circle (0.2cm);
         \draw (1.2, 1.2) circle (0.2cm);
 
-        \draw (-0.3,1.5) -- (1.5,1.5);    
+        \draw (-0.3,1.5) -- (1.5,1.5);
         \draw (1.5 ,1.5) -- (1.5,0.9);
         \draw (1.5, 0.9) -- (0.9,0.9);
-        \draw (0.9, 0.9) -- (0.9,0.3); 
+        \draw (0.9, 0.9) -- (0.9,0.3);
         \draw (0.9, 0.3) -- (-0.3, 0.3);
         \draw (-0.3, 0.3) -- (-0.3,1.5);
-      \end{tikzpicture} 
+      \end{tikzpicture}
     \captionof{figure}{Write 2}
   \end{minipage}
 \end{lrbox}
 %
 \solution[a]{
-  Since one operation is executed at a time, the 2PC protocol must 
+  Since one operation is executed at a time, the 2PC protocol must
   finish before the next operation is performed. This makes the system
-  rather inavailable, especially if many operations is executed. Also, 
-  the fact that 2PC is a blocking protocol makes the protocol not suited 
+  rather inavailable, especially if many operations is executed. Also,
+  the fact that 2PC is a blocking protocol makes the protocol not suited
   for availability.
 }
-\solution[b]{Write quorums must be greater than half the total number of 
+\solution[b]{
+  Write quorums must be greater than half the total number of
   replicas, i.e. $W > \frac{9}{2} \implies W > 4 \implies W \geq 5$\\
-  Read and write quorums must be greater than the total number of 
+  Read and write quorums must be greater than the total number of
   replicas, i.e. $R + W > 9 \implies R > 9 - W \implies R > 4 \implies R \geq 5$\\ \\
   %
   \usebox{\userinput}
   Because of the constraint on the size of read and write quorums then
-  at least on of the replicas contains updated information after each operation. 
+  at least on of the replicas contains updated information after each operation.
   This makes the system both linearizable and sequentially consistent.\\\\
   %
   \begin{tikzpicture}
     \draw (0,0) circle (0.2cm);
     \draw (0,0.6) circle (0.2cm);
     \draw (0,1.2) circle (0.2cm);
-    
+
     \draw (0.6, 0) circle (0.2cm);
     \draw (0.6, 0.6) circle (0.2cm);
     \draw (0.6, 1.2) circle (0.2cm);
-    
+
     \draw (1.2, 0) circle (0.2cm);
     \draw (1.2, 0.6) circle (0.2cm);
     \draw (1.2, 1.2) circle (0.2cm);
 
-    \draw (-0.3,1.5) -- (1.5,1.5);    
+    \draw (-0.3,1.5) -- (1.5,1.5);
     \draw (1.5 ,1.5) -- (1.5,0.9);
     \draw (1.5, 0.9) -- (0.9,0.9);
-    \draw (0.9, 0.9) -- (0.9,0.3); 
+    \draw (0.9, 0.9) -- (0.9,0.3);
     \draw (0.9, 0.3) -- (-0.3, 0.3);
     \draw (-0.3, 0.3) -- (-0.3,1.5);
 
-    \draw (-0.3,1.5) -- (1.5,1.5);    
+    \draw (-0.3,1.5) -- (1.5,1.5);
     \draw (1.5, 1.5) -- (1.5,-0.3);
     \draw (1.5,-0.3) -- (0.9,-0.3);
-    \draw (0.9,-0.3) -- (0.9,0.9); 
+    \draw (0.9,-0.3) -- (0.9,0.9);
     \draw (0.9, 0.9) -- (-0.3, 0.9);
     \draw (-0.3,0.9) -- (-0.3,1.5);
-  \end{tikzpicture} 
+  \end{tikzpicture}
+
+
 }
 %
 %
